@@ -1,0 +1,121 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.clock1 {
+    padding: 45vh 0 0 0;
+    display: inline-block;
+    width: 32vw;
+    height: auto;
+    text-align: center;
+}
+
+.clock1 .day {
+    margin: auto;
+    padding: 0 0 0 2px;
+    width: 40px;
+    height: 33px;
+    font-size: 2em;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.clock1 .udline {
+    padding-bottom: 1px;
+    width: 30px;
+    margin: auto;
+    border-bottom: .5px solid black;
+}
+
+.clock1 .month {
+    font-size: .4em;
+    padding: 2.5px 0 0 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    width: 40px;
+    margin: auto;
+}
+
+.clock2 {
+    padding: 45vh 0 0 0;
+    display: inline-block;
+    width: 32vw;
+    height: auto;
+    text-align: center;
+}
+
+.clock2 .day {
+    margin: auto;
+    padding: 0 0 0 2px;
+    width: 40px;
+    height: 33px;
+    font-size: 2em;
+    font-family: 'Courier New', Courier, monospace;
+    border: 1px solid black;
+}
+
+.clock2 .month {
+    width: 40px;
+    margin: auto;
+    font-size: .4em;
+    padding: 1px 1px 2.5px 1px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border: 1px solid black;
+    background-color: black;
+    color: white;
+}
+
+.clock3 {
+    padding: 45vh 0 0 0;
+    display: inline-block;
+    width: 32vw;
+    height: 45px;
+    text-align: center;
+}
+
+.clockbox {
+    margin: auto;
+    padding: 8px 0 0 0;
+    width: 60px;
+    height: 100%;
+}
+
+.clock3 .day {
+    float: left;
+    padding: 0 0 0 2px;
+    width: 40px;
+    height: 33px;
+    font-size: 2em;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.clock3 .month {
+    float: left;
+    font-size: .4em;
+    padding: 2.5px 0 0 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@media (max-width:500px){
+    .clock1 {
+        padding: 15vh 0 0 0;
+        display: inline-block;
+        width: 100vw;
+        height: auto;
+        text-align: center;
+    }
+    .clock2 {
+        padding: 25vh 0 0 0;
+        display: inline-block;
+        width: 100vw;
+        height: auto;
+        text-align: center;
+    }
+    .clock3 {
+        padding: 25vh 0 0 0;
+        display: inline-block;
+        width: 100vw;
+        height: auto;
+        text-align: center;
+    }
+}
