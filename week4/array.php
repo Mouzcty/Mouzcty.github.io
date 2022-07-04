@@ -9,7 +9,7 @@ $num = array(3, 6, 2, 45, 34, 63, 4, 63, 76, 21);
 $oddArray = array();
 $evenArray = array();
 $total = 0;
-$totalOdd = 0;
+$totalOdd = 0;  
 $totalEven = 0;
 
 echo "\nOrginal array: \n";
@@ -20,7 +20,7 @@ for ($i = 0; $i < count($num); $i++) {
         echo "$num[$i]";
     }
     $total = $total + $num[$i];
-}
+} 
 echo "<br>";
 
 $x = 0;

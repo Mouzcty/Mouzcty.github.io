@@ -7,7 +7,7 @@
 <body>
 <?php
     echo "<pre>";
-    for ($x = 0; $x < 6; $x++) {
+    for ($x = 1; $x < 6; $x++) {
         for ($y = 0; $y < $x; $y++) {
             echo "*";
         }
