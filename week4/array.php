@@ -57,7 +57,6 @@ for ($i = 0; $i <= $y; $i++) {
 echo "<br>";
 echo "Total All: ",$total ,"<br>";
 echo "Total Even: ",$totalEven,"<br>";
-echo "Total Odd: ",$totalOdd,"<br>";
 ?>
 
 </body>
