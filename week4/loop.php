@@ -14,7 +14,7 @@
         }
 
         if (empty($smonth)) {
-            $smonth = date('F');
+            $smonth = date('m');
         }
 
         if (empty($syear)) {

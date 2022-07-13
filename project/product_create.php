@@ -1,3 +1,49 @@
+<?php
+function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
+
+    if (empty($sday)) {
+        $sday = date('d');
+    }
+
+    if (empty($smonth)) {
+        $smonth = date('m');
+    }
+
+    if (empty($syear)) {
+        $syear = date('Y');
+    }
+
+    //---v---select day---v---//
+    $mday = $datetype."day";
+    $mmonth = $datetype."month";
+    $myear = $datetype."year";
+    echo "<select name= $mday>";
+    for ($day = 1; $day <= 31; $day++) {
+        $s = ($day == $sday) ? 'selected' : '';
+        echo "<option value = $day $s> $day </option>";
+    }
+    echo '</select>';
+
+    //---v---select month---v---//
+    echo "<select name=$mmonth>";
+    for ($month = 1; $month <= 12; $month++) {
+        $s = ($month == $smonth) ? 'selected' : '';
+        echo "<option value = $month $s>". date('F', mktime(0, 0, 0, $month)) ."</option>";
+    }
+    echo '</select>';
+
+    //---v---select year---v---//
+    $nowyear = date('Y');
+    echo "<select name=$myear>";
+    for ($year = 1990; $year <= $nowyear; $year++) {
+        $s = ($year == $syear) ? 'selected' : '';
+        echo "<option value = $year $s> $year </option>";
+    }
+    echo '</select>';
+    echo "<br>";
+}
+?>
+
 <!DOCTYPE HTML>
 <html>
 
@@ -74,77 +120,19 @@
                 <tr>
                     <td>Manufacture date </td>
                     <td>
-
-                        <select name="manufacturedate">
-                            <?php
-                            $sltday = date('d');
-                            echo "<option value = $sltday> $sltday </option>";
-                            for ($day = 1; $day <= 31; $day++) {
-                                echo "<option value = $day> $day </option>";
-                            }
-                            ?>
-                            <option name="manufacturedate" multiple> </option>
-                        </select>
-
-                        <select name="manufacturedate">
-                            <?php
-                            $sltmonth = date('F');
-                            echo "<option value = $sltmonth> $sltmonth </option>";
-                            for ($month = 1; $month <= 12; $month++) {
-                                echo "<option value = $month>" . date('F', mktime(0, 0, 0, $month)) . "</option>";
-                            }
-                            ?>
-                            <option name="manufacturedate" multiple> </option>
-                        </select>
-
-                        <select name="manufacturedate">
-                            <?php
-                            $sltyear = date('Y');
-                            echo "<option value = $sltyear> $sltyear </option>";
-                            for ($year = 1990; $year <= $sltyear; $year++) {
-                                echo "<option value = $year> $year </option>";
-                            }
-                            ?>
-                            <option name="manufacturedate" multiple> </option>
-                        </select>
+                        <?php
+                            dropdown($sday = "", $smonth = "", $syear = "",$datetype = "");
+                        ?>
                     </td>
+                    <input type="hidden" id="custId" name="custId" value="3487">
 
                 </tr>
                 <tr>
                     <td>Expiry date</td>
                     <td>
-                        <select name="expirydate">
-                            <?php
-                            $sltday = date('d');
-                            echo "<option value = $sltday> $sltday </option>";
-                            for ($day = 1; $day <= 31; $day++) {
-                                echo "<option value = $day> $day </option>";
-                            }
-                            ?>
-                            <option name="expirydate" multiple> </option>
-                        </select>
-
-                        <select name="expirydate">
-                            <?php
-                            $sltmonth = date('F');
-                            echo "<option value = $sltmonth> $sltmonth </option>";
-                            for ($month = 1; $month <= 12; $month++) {
-                                echo "<option value = $month>" . date('F', mktime(0, 0, 0, $month)) . "</option>";
-                            }
-                            ?>
-                            <option name="expirydate" multiple> </option>
-                        </select>
-
-                        <select name="expirydate">
-                            <?php
-                            $sltyear = date('Y');
-                            echo "<option value = $sltyear> $sltyear </option>";
-                            for ($year = 1990; $year <= $sltyear; $year++) {
-                                echo "<option value = $year> $year </option>";
-                            }
-                            ?>
-                            <option name="expirydate" multiple> </option>
-                        </select>
+                        <?php
+                            dropdown($sday = "", $smonth = "", $syear = "",$datetype = "");
+                        ?>
                     </td>
                 </tr>
                 <tr>
