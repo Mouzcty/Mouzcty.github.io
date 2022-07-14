@@ -14,10 +14,11 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
     }
 
     //---v---select day---v---//
-    $mday = $datetype."day";
-    $mmonth = $datetype."month";
-    $myear = $datetype."year";
-    echo "<select name= $mday>";
+    $nameday = $datetype."_day";
+    $namemonth = $datetype."_month";
+    $nameyear = $datetype."_year";
+
+    echo "<select name= $nameday>";
     for ($day = 1; $day <= 31; $day++) {
         $s = ($day == $sday) ? 'selected' : '';
         echo "<option value = $day $s> $day </option>";
@@ -25,7 +26,7 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
     echo '</select>';
 
     //---v---select month---v---//
-    echo "<select name=$mmonth>";
+    echo "<select name = $namemonth>";
     for ($month = 1; $month <= 12; $month++) {
         $s = ($month == $smonth) ? 'selected' : '';
         echo "<option value = $month $s>". date('F', mktime(0, 0, 0, $month)) ."</option>";
@@ -34,7 +35,7 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
 
     //---v---select year---v---//
     $nowyear = date('Y');
-    echo "<select name=$myear>";
+    echo "<select name = $nameyear>";
     for ($year = 1990; $year <= $nowyear; $year++) {
         $s = ($year == $syear) ? 'selected' : '';
         echo "<option value = $year $s> $year </option>";
@@ -62,27 +63,36 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
         <!-- PHP insert code will be here -->
         <?php
         if (!empty($_POST)) {
+                // posted values
+                $name = htmlspecialchars(strip_tags($_POST['name']));
+
+                $description = htmlspecialchars(strip_tags($_POST['description']));
+
+                $price = htmlspecialchars(strip_tags($_POST['price']));
+
+                $manu_date = $_POST['manu_date_year']."-".$_POST['manu_date_month']."-".$_POST['manu_date_day'];
+                
+                $expr_date = $_POST['expr_date_year']."-".$_POST['expr_date_month']."-".$_POST['expr_date_day'];
+
+                $status = htmlspecialchars(strip_tags($_POST['status']));
+                // if(empty($status)){
+                //     echo "Please do not leave expiry day empty";
+                // }
 
             // include database connection
             include 'config/database.php';
             try {
                 // insert query
-                $query = "INSERT INTO products SET name=:name, description=:description, price=:price, manufacturedate=:manufacturedate, expirydate=:expirydate, status=:status, created=:created";
+                $query = "INSERT INTO products SET name=:name, description=:description, price=:price, manu_date=:manu_date, expr_date=:expr_date, status=:status, created=:created";
                 // prepare query for execution
                 $stmt = $con->prepare($query);
-                // posted values
-                $name = htmlspecialchars(strip_tags($_POST['name']));
-                $description = htmlspecialchars(strip_tags($_POST['description']));
-                $price = htmlspecialchars(strip_tags($_POST['price']));
-                $manufacturedate = htmlspecialchars(strip_tags($_POST['manufacturedate']));
-                $expirydate = htmlspecialchars(strip_tags($_POST['expirydate']));
-                $status = htmlspecialchars(strip_tags($_POST['status']));
+
                 // bind the parameters
                 $stmt->bindParam(':name', $name);
                 $stmt->bindParam(':description', $description);
                 $stmt->bindParam(':price', $price);
-                $stmt->bindParam(':manufacturedate', $manufacturedate);
-                $stmt->bindParam(':expirydate', $expirydate);
+                $stmt->bindParam(':manu_date', $manu_date);
+                $stmt->bindParam(':expr_date', $expr_date);
                 $stmt->bindParam(':status', $status);
                 // specify when this record was inserted to the database
                 $created = date('Y-m-d H:i:s');
@@ -121,17 +131,16 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
                     <td>Manufacture date </td>
                     <td>
                         <?php
-                            dropdown($sday = "", $smonth = "", $syear = "",$datetype = "");
+                            dropdown($sday = "", $smonth = "", $syear = "2021",$datetype = "manu_date");
                         ?>
                     </td>
-                    <input type="hidden" id="custId" name="custId" value="3487">
 
                 </tr>
                 <tr>
                     <td>Expiry date</td>
                     <td>
                         <?php
-                            dropdown($sday = "", $smonth = "", $syear = "",$datetype = "");
+                            dropdown($sday = "" , $smonth = "", $syear = "",$datetype = "expr_date");
                         ?>
                     </td>
                 </tr>
@@ -155,16 +164,6 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
     </div>
     <!-- end .container -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-
-    <script>
-        function validateForm() {
-            var x = document.forms["productform"]["name", "price", "manufacturedate", "expirydate", "status"].value;
-            if (x == "" || x == null) {
-                alert("Empty must be filled out");
-                return false;
-            }
-        }
-    </script>
 
 </body>
 
