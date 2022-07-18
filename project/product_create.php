@@ -1,5 +1,6 @@
 <?php
-function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
+function dropdown($sday = "", $smonth = "", $syear = "", $datetype = "")
+{
 
     if (empty($sday)) {
         $sday = date('d');
@@ -14,9 +15,9 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
     }
 
     //---v---select day---v---//
-    $nameday = $datetype."_day";
-    $namemonth = $datetype."_month";
-    $nameyear = $datetype."_year";
+    $nameday = $datetype . "_day";
+    $namemonth = $datetype . "_month";
+    $nameyear = $datetype . "_year";
 
     echo "<select name= $nameday>";
     for ($day = 1; $day <= 31; $day++) {
@@ -29,7 +30,7 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
     echo "<select name = $namemonth>";
     for ($month = 1; $month <= 12; $month++) {
         $s = ($month == $smonth) ? 'selected' : '';
-        echo "<option value = $month $s>". date('F', mktime(0, 0, 0, $month)) ."</option>";
+        echo "<option value = $month $s>" . date('F', mktime(0, 0, 0, $month)) . "</option>";
     }
     echo '</select>';
 
@@ -44,6 +45,15 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
     echo "<br>";
 }
 ?>
+<?php
+function validateDate($date, $format = 'Y-n-d')
+{
+    $d = DateTime::createFromFormat($format, $date);
+    // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
+    return $d && $d->format($format) === $date;
+}
+?>
+
 
 <!DOCTYPE HTML>
 <html>
@@ -62,22 +72,49 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
         </div>
         <!-- PHP insert code will be here -->
         <?php
+        $save = true;
         if (!empty($_POST)) {
-                // posted values
-                $name = htmlspecialchars(strip_tags($_POST['name']));
+            // posted values
+            $name = htmlspecialchars(strip_tags($_POST['name']));
+            if (empty($name)) {
+                echo "Please do not leave name empty.<br>";
+                $save = false;
+            }
 
-                $description = htmlspecialchars(strip_tags($_POST['description']));
+            $description = htmlspecialchars(strip_tags($_POST['description']));
 
-                $price = htmlspecialchars(strip_tags($_POST['price']));
+            $price = htmlspecialchars(strip_tags($_POST['price']));
+            if (empty($price)) {
+                echo "Please do not leave price empty.<br>";
+                $save = false;
+            }
 
-                $manu_date = $_POST['manu_date_year']."-".$_POST['manu_date_month']."-".$_POST['manu_date_day'];
-                
-                $expr_date = $_POST['expr_date_year']."-".$_POST['expr_date_month']."-".$_POST['expr_date_day'];
+            $manu_date = $_POST['manu_date_year'] . "-" . $_POST['manu_date_month'] . "-" . $_POST['manu_date_day'];
+            if (validateDate($manu_date) == false) {
+                echo "Manufacture selected date is not exist<br>";
+                $save = false;
+            }
 
-                $status = htmlspecialchars(strip_tags($_POST['status']));
-                // if(empty($status)){
-                //     echo "Please do not leave expiry day empty";
-                // }
+
+            $expr_date = $_POST['expr_date_year'] . "-" . $_POST['expr_date_month'] . "-" . $_POST['expr_date_day'];
+            $dateM = date_create($manu_date);
+            $dateE = date_create($expr_date);
+            $x = date_diff($dateM, $dateE);
+            if ($x->format("%R%a") < 0) {
+                echo "Expiry date should not earlier than manufacture date.<br>";
+                $save = false;
+            }
+            if (validateDate($expr_date) == false) {
+                echo "Expiry selected date is not exist<br>";
+                $save = false;
+            }
+
+            $status = htmlspecialchars(strip_tags($_POST['status']));
+            if (empty($status)) {
+                echo "Please do not leave status empty.<br>";
+                $save = false;
+            }
+
 
             // include database connection
             include 'config/database.php';
@@ -97,9 +134,17 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
                 // specify when this record was inserted to the database
                 $created = date('Y-m-d H:i:s');
                 $stmt->bindParam(':created', $created);
+
                 // Execute the query
-                if (!empty($stmt->execute())) {
+                // if (!empty($stmt->execute())) {
+                //     echo "<div class='alert alert-success'>Record was saved.</div>";
+                // }else {
+                //     echo "<div class='alert alert-danger'>Unable to save record.</div>";
+                // }
+
+                if ($save != false) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";
+                    echo $stmt->execute();
                 } else {
                     echo "<div class='alert alert-danger'>Unable to save record.</div>";
                 }
@@ -110,7 +155,6 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
             }
         }
         ?>
-
 
         <!-- html form here where the product information will be entered -->
         <form name="productform" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return validateForm()" method="post" required>
@@ -131,7 +175,7 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
                     <td>Manufacture date </td>
                     <td>
                         <?php
-                            dropdown($sday = "", $smonth = "", $syear = "2021",$datetype = "manu_date");
+                        dropdown($sday = "", $smonth = "", $syear = "2021", $datetype = "manu_date");
                         ?>
                     </td>
 
@@ -140,15 +184,15 @@ function dropdown($sday = "", $smonth = "", $syear = "",$datetype = ""){
                     <td>Expiry date</td>
                     <td>
                         <?php
-                            dropdown($sday = "" , $smonth = "", $syear = "",$datetype = "expr_date");
+                        dropdown($sday = "", $smonth = "", $syear = "", $datetype = "expr_date");
                         ?>
                     </td>
                 </tr>
                 <tr>
                     <td>Status</td>
                     <td>
-                        <input type="radio" name="status" value="available"><label for="html">Available</label>&nbsp;
-                        <input type="radio" name="status" value="not_available"><label for="html">Not Available</label>
+                        <input type="radio" name="status" value="available" checked><label>Available</label>&nbsp;
+                        <input type="radio" name="status" value="not_available"><label>Not Available</label>
                     </td>
                 </tr>
                 <tr>
