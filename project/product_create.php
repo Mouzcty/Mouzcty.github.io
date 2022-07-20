@@ -88,7 +88,7 @@ function validateDate($date, $format = 'Y-n-d')
                 echo "Please do not leave price empty.<br>";
                 $save = false;
             }
-            if (is_numeric($price)) {
+            if (is_numeric($price)==false) {
                 echo "Price should be numeric.<br>";
                 $save = false;
             }
