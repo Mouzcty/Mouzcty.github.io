@@ -88,6 +88,10 @@ function validateDate($date, $format = 'Y-n-d')
                 echo "Please do not leave price empty.<br>";
                 $save = false;
             }
+            if (is_numeric($price)) {
+                echo "Price should be numeric.<br>";
+                $save = false;
+            }
 
             $manu_date = $_POST['manu_date_year'] . "-" . $_POST['manu_date_month'] . "-" . $_POST['manu_date_day'];
             if (validateDate($manu_date) == false) {
@@ -144,7 +148,7 @@ function validateDate($date, $format = 'Y-n-d')
 
                 if ($save != false) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";
-                    echo $stmt->execute();
+                    $stmt->execute();
                 } else {
                     echo "<div class='alert alert-danger'>Unable to save record.</div>";
                 }
