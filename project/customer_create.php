@@ -59,7 +59,7 @@ function validateDate($date, $format = 'Y-n-d')
 <html>
 
 <head>
-    <title>PDO - Create Product - PHP CRUD Tutorial</title>
+    <title>PDO - Sign in Customer - PHP CRUD Tutorial</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
@@ -68,7 +68,7 @@ function validateDate($date, $format = 'Y-n-d')
     <!-- container -->
     <div class="container">
         <div class="page-header">
-            <h1>Create Product</h1>
+            <h1>Sign in Customer</h1>
         </div>
         <!-- PHP insert code will be here -->
         <?php
@@ -77,44 +77,68 @@ function validateDate($date, $format = 'Y-n-d')
             // posted values
             //name check//
             $msg = "";
-            $name = htmlspecialchars(strip_tags($_POST['name']));
-            if (empty($name)) {
-                $msg = $msg . "Please do not leave name empty<br>";
+            $firstname = htmlspecialchars(strip_tags($_POST['firstname']));
+            if (empty($firstname)) {
+                $msg = $msg . "Please do not leave firstname empty<br>";
+                $save = false;
+            }
+            $lastname = htmlspecialchars(strip_tags($_POST['lastname']));
+            if (empty($lastname)) {
+                $msg = $msg . "Please do not leave lastname empty<br>";
                 $save = false;
             }
 
-            $description = htmlspecialchars(strip_tags($_POST['description']));
-
-            //price check//
-            $price = htmlspecialchars(strip_tags($_POST['price']));
-            if (empty($price)) {
-                $msg = $msg . "Please do not leave price empty<br>";
+            $email = htmlspecialchars(strip_tags($_POST['email']));
+            if (empty($email)) {
+                $msg = $msg . "Please do not leave email empty<br>";
                 $save = false;
-            } else if (is_numeric($price) == false) {
-                $msg = $msg . "Price should be numeric<br>";
+            }elseif (!preg_match("/@/",$email)) {
+                $msg = "Invalid email format<br>";
                 $save = false;
             }
-
-            //manu and expr date check//
-            $manu_date = $_POST['manu_date_year'] . "-" . $_POST['manu_date_month'] . "-" . $_POST['manu_date_day'];
-            if (validateDate($manu_date) == false) {
-                $msg = $msg . "Manufacture date selected is not exist<br>";
+            
+            
+            $passd = htmlspecialchars(strip_tags($_POST['passd']));
+            if (empty($passd)) {
+                $msg = $msg . "Please do not leave password empty<br>";
+                $save = false;
+            }elseif (strlen($passd)<=5) {
+                $msg = $msg . "Password format should be more than 6 character<br>";
+                $save = false;
+            }elseif (!preg_match("/[a-z]/",$passd)||!preg_match("/[A-Z]/",$passd)||!preg_match("/[1-9]/",$passd)) {
+                $msg = $msg . "Invalid password format<br>";
                 $save = false;
             }
+            
+            
+            
 
-            $expr_date = $_POST['expr_date_year'] . "-" . $_POST['expr_date_month'] . "-" . $_POST['expr_date_day'];
-            $dateM = date_create($manu_date);
-            $dateE = date_create($expr_date);
-            $x = date_diff($dateM, $dateE);
-            if (validateDate($expr_date) == false) {
-                $msg = $msg . "Expiry date selected is not exist<br>";
+
+            //birth date check//
+            $birth_date = $_POST['birth_date_year'] . "-" . $_POST['birth_date_month'] . "-" . $_POST['birth_date_day'];
+            $today = date('Y-n-d');
+            $date1 = date_create($birth_date);
+            $date2 = date_create($today);
+            $diff = date_diff($date1,$date2);
+            if (validateDate($birth_date) == false) {
+                $msg = $msg . "Birthdate selected is not exist<br>";
                 $save = false;
-            } else if ($x->format("%R%a") < 0) { 
-                $msg = $msg . "Expiry date should not earlier than manufacture date<br>";
+            }elseif ($diff->format("%R%a")<6570){
+                $msg = $msg . "Customer must be over 18 years old<br>";
                 $save = false;
             }
+            $today = date('Y-n-d');
+            $date1 = date_create($birth_date);
+            $date2 = date_create($today);
+            $diff = date_diff($date1,$date2);
+            
 
             //status check//
+            $gender = htmlspecialchars(strip_tags($_POST['gender']));
+            if (empty($gender)) {
+                $msg = $msg . "Please do not leave gender empty<br>";
+                $save = false;
+            }
             $status = htmlspecialchars(strip_tags($_POST['status']));
             if (empty($status)) {
                 $msg = $msg . "Please do not leave status empty<br>";
@@ -126,16 +150,17 @@ function validateDate($date, $format = 'Y-n-d')
             include 'config/database.php';
             try {
                 // insert query
-                $query = "INSERT INTO products SET name=:name, description=:description, price=:price, manu_date=:manu_date, expr_date=:expr_date, status=:status, created=:created";
+                $query = "INSERT INTO customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, birth_date=:birth_date, gender=:gender, status=:status, created=:created";
                 // prepare query for execution
                 $stmt = $con->prepare($query);
 
                 // bind the parameters
-                $stmt->bindParam(':name', $name);
-                $stmt->bindParam(':description', $description);
-                $stmt->bindParam(':price', $price);
-                $stmt->bindParam(':manu_date', $manu_date);
-                $stmt->bindParam(':expr_date', $expr_date);
+                $stmt->bindParam(':firstname', $firstname);
+                $stmt->bindParam(':lastname', $lastname);
+                $stmt->bindParam(':email', $email);
+                $stmt->bindParam(':passd', $passd);
+                $stmt->bindParam(':birth_date', $birth_date);
+                $stmt->bindParam(':gender', $gender);
                 $stmt->bindParam(':status', $status);
                 // specify when this record was inserted to the database
                 $created = date('Y-m-d H:i:s');
@@ -152,7 +177,7 @@ function validateDate($date, $format = 'Y-n-d')
                     echo "<div class='alert alert-success'>Record was saved.</div>";
                     $stmt->execute();
                 } else {
-                    echo "<div class='alert alert-danger'>Unable to save record:<br>$msg</div>";
+                    echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
                 }
             }
             // show error
@@ -163,49 +188,52 @@ function validateDate($date, $format = 'Y-n-d')
         ?>
 
         <!-- html form here where the product information will be entered -->
-        <form name="productform" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return validateForm()" method="post" required>
+        <form name="customer" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return validateForm()" method="post" required>
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
-                    <td>Name</td>
-                    <td><input type='text' name='name' class='form-control' value /></td>
+                    <td>First Name</td>
+                    <td><input type='text' name='firstname' class='form-control' value /></td>
                 </tr>
                 <tr>
-                    <td>Description</td>
-                    <td><textarea name='description' class='form-control'></textarea></td>
+                    <td>Last Name</td>
+                    <td><input type='text' name='lastname' class='form-control' value /></td>
                 </tr>
                 <tr>
-                    <td>Price</td>
-                    <td><input type='text' name='price' class='form-control' /></td>
+                    <td>Email</td>
+                    <td><input type='text' name='email' class='form-control' value /></td>
                 </tr>
                 <tr>
-                    <td>Manufacture date </td>
+                    <td>Password</td>
+                    <td><input type='text' name='passd' class='form-control' value /></td>
+                </tr>
+                <tr>
+                    <td>Date of Birth</td>
                     <td>
                         <?php
-                        dropdown($sday = "", $smonth = "", $syear = "2021", $datetype = "manu_date");
+                        dropdown($sday = "", $smonth = "", $syear = "", $datetype = "birth_date");
                         ?>
                     </td>
 
                 </tr>
                 <tr>
-                    <td>Expiry date</td>
+                    <td>Gender</td>
                     <td>
-                        <?php
-                        dropdown($sday = "", $smonth = "", $syear = "", $datetype = "expr_date");
-                        ?>
+                        <input type="radio" name="gender" value="male" checked><label>Male</label>&nbsp;
+                        <input type="radio" name="gender" value="female"><label>Female</label>
                     </td>
                 </tr>
                 <tr>
                     <td>Status</td>
                     <td>
-                        <input type="radio" name="status" value="available" checked><label>Available</label>&nbsp;
-                        <input type="radio" name="status" value="not_available"><label>Not Available</label>
+                        <input type="radio" name="status" value="active" checked><label>Active</label>&nbsp;
+                        <input type="radio" name="status" value="deactive"><label>Deactive</label>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
                         <input type='submit' value='Save' class='btn btn-primary' />
-                        <a href='product_read.php' class='btn btn-danger'>Back to read products</a>
+                        <a href='customer_read.php' class='btn btn-danger'>Back to read customer list</a>
                     </td>
                 </tr>
             </table>
