@@ -92,46 +92,39 @@ function validateDate($date, $format = 'Y-n-d')
             if (empty($email)) {
                 $msg = $msg . "Please do not leave email empty<br>";
                 $save = false;
-            }elseif (!preg_match("/@/",$email)) {
+            } elseif (!preg_match("/@/", $email)) {
                 $msg = "Invalid email format<br>";
                 $save = false;
             }
-            
-            
+
+
             $passd = htmlspecialchars(strip_tags($_POST['passd']));
             if (empty($passd)) {
                 $msg = $msg . "Please do not leave password empty<br>";
                 $save = false;
-            }elseif (strlen($passd)<=5) {
-                $msg = $msg . "Password format should be more than 6 character<br>";
-                $save = false;
-            }elseif (!preg_match("/[a-z]/",$passd)||!preg_match("/[A-Z]/",$passd)||!preg_match("/[1-9]/",$passd)) {
-                $msg = $msg . "Invalid password format<br>";
+            } elseif (strlen($passd) <= 5||!preg_match("/[a-z]/", $passd) || !preg_match("/[A-Z]/", $passd) || !preg_match("/[1-9]/", $passd)) {
+                $msg = $msg . "Invalid password format (Password format should be more than 6 character, at least 1 uppercase, 1 lowercase & 1 number)<br>";
                 $save = false;
             }
-            
-            
-            
-
 
             //birth date check//
             $birth_date = $_POST['birth_date_year'] . "-" . $_POST['birth_date_month'] . "-" . $_POST['birth_date_day'];
             $today = date('Y-n-d');
             $date1 = date_create($birth_date);
             $date2 = date_create($today);
-            $diff = date_diff($date1,$date2);
+            $diff = date_diff($date1, $date2);
             if (validateDate($birth_date) == false) {
                 $msg = $msg . "Birthdate selected is not exist<br>";
                 $save = false;
-            }elseif ($diff->format("%R%a")<6570){
+            } elseif ($diff->format("%R%a") < 6570) {
                 $msg = $msg . "Customer must be over 18 years old<br>";
                 $save = false;
             }
             $today = date('Y-n-d');
             $date1 = date_create($birth_date);
             $date2 = date_create($today);
-            $diff = date_diff($date1,$date2);
-            
+            $diff = date_diff($date1, $date2);
+
 
             //status check//
             $gender = htmlspecialchars(strip_tags($_POST['gender']));
@@ -192,19 +185,19 @@ function validateDate($date, $format = 'Y-n-d')
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>First Name</td>
-                    <td><input type='text' name='firstname' class='form-control' value /></td>
+                    <td><input type='text' name='firstname' class='form-control' value= "<?php if (isset($_POST['firstname'])) echo $_POST['firstname']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Last Name</td>
-                    <td><input type='text' name='lastname' class='form-control' value /></td>
+                    <td><input type='text' name='lastname' class='form-control' value= "<?php if (isset($_POST['lastname'])) echo $_POST['lastname']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Email</td>
-                    <td><input type='text' name='email' class='form-control' value /></td>
+                    <td><input type='text' name='email' class='form-control' value= "<?php if (isset($_POST['email'])) echo $_POST['email']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Password</td>
-                    <td><input type='text' name='passd' class='form-control' value /></td>
+                    <td><input type='text' name='passd' class='form-control' value= "<?php if (isset($_POST['passd'])) echo $_POST['passd']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Date of Birth</td>
