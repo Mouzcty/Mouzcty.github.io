@@ -13,7 +13,7 @@ function dropdown($sday = "", $smonth = "", $syear = "", $datetype = "")
     if (empty($syear)) {
         $syear = date('Y');
     }
-
+    
     //---v---select day---v---//
     $nameday = $datetype . "_day";
     $namemonth = $datetype . "_month";
@@ -59,7 +59,7 @@ function validateDate($date, $format = 'Y-n-d')
 <html>
 
 <head>
-    <title>PDO - Sign in Customer - PHP CRUD Tutorial</title>
+    <title>PDO - Create Customer - PHP CRUD Tutorial</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
@@ -68,7 +68,7 @@ function validateDate($date, $format = 'Y-n-d')
     <!-- container -->
     <div class="container">
         <div class="page-header">
-            <h1>Sign in Customer</h1>
+            <h1>Create Customer</h1>
         </div>
         <!-- PHP insert code will be here -->
         <?php
@@ -88,6 +88,7 @@ function validateDate($date, $format = 'Y-n-d')
                 $save = false;
             }
 
+            //email//
             $email = htmlspecialchars(strip_tags($_POST['email']));
             if (empty($email)) {
                 $msg = $msg . "Please do not leave email empty<br>";
@@ -96,7 +97,17 @@ function validateDate($date, $format = 'Y-n-d')
                 $msg = "Invalid email format<br>";
                 $save = false;
             }
-
+            include 'config/database.php';
+            $query = "SELECT email FROM customer WHERE email=:email";
+            $stmt = $con->prepare($query);
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            $num = $stmt->rowCount();
+            if ($num>0){
+                $msg = "This email is duplicates<br>";
+                $save = false;
+            }
+            
 
             $passd = htmlspecialchars(strip_tags($_POST['passd']));
             if (empty($passd)) {
@@ -127,13 +138,16 @@ function validateDate($date, $format = 'Y-n-d')
 
 
             //status check//
-            $gender = htmlspecialchars(strip_tags($_POST['gender']));
-            if (empty($gender)) {
+            if (isset($_POST['gender'])) {
+                $gender = htmlspecialchars(strip_tags($_POST['gender']));   
+            }else{
                 $msg = $msg . "Please do not leave gender empty<br>";
                 $save = false;
             }
-            $status = htmlspecialchars(strip_tags($_POST['status']));
-            if (empty($status)) {
+            
+            if (isset($_POST['status'])) {
+                $status = htmlspecialchars(strip_tags($_POST['status']));  
+            }else{
                 $msg = $msg . "Please do not leave status empty<br>";
                 $save = false;
             }
@@ -203,7 +217,8 @@ function validateDate($date, $format = 'Y-n-d')
                     <td>Date of Birth</td>
                     <td>
                         <?php
-                        dropdown($sday = "", $smonth = "", $syear = "", $datetype = "birth_date");
+                        $yearago = date("Y",strtotime('18 years ago'));
+                        dropdown($sday = "", $smonth = "", $syear = $yearago, $datetype = "birth_date");
                         ?>
                     </td>
 
@@ -211,15 +226,15 @@ function validateDate($date, $format = 'Y-n-d')
                 <tr>
                     <td>Gender</td>
                     <td>
-                        <input type="radio" name="gender" value="male" checked><label>Male</label>&nbsp;
-                        <input type="radio" name="gender" value="female"><label>Female</label>
+                        <input type="radio" name="gender" value="male" <?php if (isset($_POST["gender"])&&($gender == "male")) echo 'checked'; ?>><label>Male</label>&nbsp;
+                        <input type="radio" name="gender" value="female" <?php if (isset($_POST["gender"])&&($gender == "female")) echo 'checked'; ?>><label>Female</label>
                     </td>
                 </tr>
                 <tr>
                     <td>Status</td>
                     <td>
-                        <input type="radio" name="status" value="active" checked><label>Active</label>&nbsp;
-                        <input type="radio" name="status" value="deactive"><label>Deactive</label>
+                        <input type="radio" name="status" value="active" <?php if (isset($_POST["status"])&&($status == "active")) echo 'checked'; ?>><label>Active</label>&nbsp;
+                        <input type="radio" name="status" value="deactive" <?php if (isset($_POST["status"])&&($status == "deactive")) echo 'checked'; ?>><label>Deactive</label>
                     </td>
                 </tr>
                 <tr>
