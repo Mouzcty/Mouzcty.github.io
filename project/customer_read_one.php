@@ -27,7 +27,7 @@
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, firstname, lastname, email, password, birth_date, gender, status FROM customer WHERE id = ? ";
+            $query = "SELECT id, firstname, lastname, email, passd, birth_date, gender, status FROM customer WHERE id = ? ";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -43,7 +43,7 @@
             $firstname = $row['firstname'];
             $lastname = $row['lastname'];
             $email = $row['email'];
-            $password = $row['password'];
+            $passd = $row['passd'];
             $birth_date = $row['birth_date'];
             $gender = $row['gender'];
             $status = $row['status'];
@@ -72,7 +72,7 @@
             </tr>
             <tr>
                 <td>Password</td>
-                <td><?php echo htmlspecialchars($password, ENT_QUOTES);  ?></td>
+                <td><?php echo htmlspecialchars($passd, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
                 <td>Date of Birth</td>

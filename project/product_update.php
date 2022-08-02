@@ -3,11 +3,11 @@ function dropdown($sday = "", $smonth = "", $syear = "", $datetype = "")
 {
 
     if (empty($sday)) {
-        $sday = date('d');
+        $sday = date('j');
     }
 
     if (empty($smonth)) {
-        $smonth = date('m');
+        $smonth = date('n');
     }
 
     if (empty($syear)) {
@@ -46,7 +46,7 @@ function dropdown($sday = "", $smonth = "", $syear = "", $datetype = "")
 }
 ?>
 <?php
-function validateDate($date, $format = 'Y-n-d')
+function validateDate($date, $format = 'Y-n-j')
 {
     $d = DateTime::createFromFormat($format, $date);
     // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
@@ -126,10 +126,6 @@ function validateDate($date, $format = 'Y-n-d')
                 }
 
                 $description = htmlspecialchars(strip_tags($_POST['description']));
-                if (empty($description)) {
-                    $msg = $msg . "Please do not leave description empty<br>";
-                    $save = false;
-                }
 
                 //price//
                 $price = htmlspecialchars(strip_tags($_POST['price']));
@@ -161,8 +157,9 @@ function validateDate($date, $format = 'Y-n-d')
                 }
 
                 //status check//
-                $status = htmlspecialchars(strip_tags($_POST['status']));
-                if (empty($status)) {
+                if (isset($_POST['status'])) {
+                    $status = htmlspecialchars(strip_tags($_POST['status']));
+                }else {
                     $msg = $msg . "Please do not leave status empty<br>";
                     $save = false;
                 }
@@ -218,20 +215,35 @@ function validateDate($date, $format = 'Y-n-d')
                 <tr>
                     <td>Manufacture date </td>
                     <td>
-                        <input type='text' name='manu_date' value="<?php echo htmlspecialchars($manu_date, ENT_QUOTES);  ?>" class='form-control' />
+                        <?php
+                        
+                        $yearsave_manu = substr($manu_date,0,4);
+                        $monthsave_manu = substr($manu_date,5,2);
+                        $daysave_manu = substr($manu_date,8,2);
+                        //echo $row['manu_date'];
+                        //echo $manu_date;
+                        dropdown($sday = $daysave_manu, $smonth = $monthsave_manu, $syear = $yearsave_manu, $datetype = "manu_date");
+                        ?>
                     </td>
 
                 </tr>
                 <tr>
                     <td>Expiry date</td>
                     <td>
-                        <input type='text' name='expr_date' value="<?php echo htmlspecialchars($expr_date, ENT_QUOTES);  ?>" class='form-control' />
+                        <?php 
+                        $yearsave_expr = substr($expr_date,0,4);
+                        $monthsave_expr = substr($expr_date,5,2);
+                        $daysave_expr = substr($expr_date,8,2);
+                        //echo $row['expr_date'];
+                        dropdown($sday = $daysave_expr, $smonth = $monthsave_expr, $syear = $yearsave_expr, $datetype = "expr_date");
+                        ?>
                     </td>
                 </tr>
                 <tr>
                     <td>Status</td>
                     <td>
-                        <input type='text' name='status' value="<?php echo htmlspecialchars($status, ENT_QUOTES);  ?>" class='form-control' />
+                        <input type="radio" name="status" value="available" <?php if($status == "available") echo 'checked'; ?>><label>Available</label>&nbsp;
+                        <input type="radio" name="status" value="not_available" <?php if ($status == "not_available") echo 'checked'; ?>><label>Not Available</label>
                     </td>
                 </tr>
                 <tr>

@@ -31,7 +31,7 @@
         $num = $stmt->rowCount();
 
         // link to create record form
-        echo "<a href='customer_create.php' class='btn btn-primary m-b-1em'>Sign in Customer</a>";
+        echo "<a href='customer_create.php' class='btn btn-primary m-b-1em'>Create Customer</a>";
 
 
         //check if more than 0 record found
@@ -68,7 +68,7 @@
                 echo "<a href='customer_read_one.php?id={$id}' class='btn btn-info m-r-1em'>Read</a>";
 
                 // we will use this links on next part of this post
-                echo "<a href='update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a>";
+                echo "<a href='customer_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a>";
 
                 // we will use this links on next part of this post
                 echo "<a href='#' onclick='delete_user({$id});'  class='btn btn-danger'>Delete</a>";

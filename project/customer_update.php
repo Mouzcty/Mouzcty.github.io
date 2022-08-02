@@ -7,13 +7,13 @@ function dropdown($sday = "", $smonth = "", $syear = "", $datetype = "")
     }
 
     if (empty($smonth)) {
-        $smonth = date('m');
+        $smonth = date('n');
     }
 
     if (empty($syear)) {
         $syear = date('Y');
     }
-    
+
     //---v---select day---v---//
     $nameday = $datetype . "_day";
     $namemonth = $datetype . "_month";
@@ -54,24 +54,66 @@ function validateDate($date, $format = 'Y-n-j')
 }
 ?>
 
-
 <!DOCTYPE HTML>
 <html>
 
 <head>
-    <title>PDO - Create Customer - PHP CRUD Tutorial</title>
+    <title>PDO - Read Records - PHP CRUD Tutorial</title>
+    <!-- Latest compiled and minified Bootstrap CSS →
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
 
 <body>
-    <!-- container -->
+    <!-- container-->
     <div class="container">
         <div class="page-header">
-            <h1>Create Customer</h1>
+            <h1>Update Customer</h1>
         </div>
-        <!-- PHP insert code will be here -->
+        <!-- PHP read record by ID will be here -->
         <?php
+        // get passed parameter value, in this case, the record ID
+        // isset() is a PHP function used to verify if a value is there or not
+        $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
+
+        //include database connection
+        include 'config/database.php';
+
+        // read current record's data
+        try {
+            // prepare select query
+            $query = "SELECT id, firstname, lastname, email, passd, birth_date, gender, status FROM customer WHERE id = ? ";
+            $stmt = $con->prepare($query);
+
+            // this is the first question mark
+            $stmt->bindParam(1, $id);
+
+            // execute our query
+            $stmt->execute();
+
+            // store retrieved row to a variable
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // values to fill up our form
+            $firstname = $row['firstname'];
+            $lastname = $row['lastname'];
+            $email = $row['email'];
+            $passd = $row['passd'];
+            $birth_date = $row['birth_date'];
+            $gender = $row['gender'];
+            $status = $row['status'];
+        }
+
+        // show error
+        catch (PDOException $exception) {
+            die('ERROR: ' . $exception->getMessage());
+        }
+        ?>
+
+        <!-- HTML form to update record will be here -->
+        <!-- PHP post to update record will be here -->
+        <?php
+        // check if form was submitted
         $save = true;
         if (!empty($_POST)) {
             // posted values
@@ -97,16 +139,16 @@ function validateDate($date, $format = 'Y-n-j')
                 $msg = "Invalid email format<br>";
                 $save = false;
             }
-            include 'config/database.php';
-            $query = "SELECT email FROM customer WHERE email=:email";
-            $stmt = $con->prepare($query);
-            $stmt->bindParam(':email', $email);
-            $stmt->execute();
-            $num = $stmt->rowCount();
-            if ($num>0){
-                $msg = "This email is duplicates<br>";
-                $save = false;
-            }
+            // include 'config/database.php';
+            // $query = "SELECT email FROM customer WHERE email=:email";
+            // $stmt = $con->prepare($query);
+            // $stmt->bindParam(':email', $email);
+            // $stmt->execute();
+            // $num = $stmt->rowCount();
+            // if ($num>0){
+            //     $msg = "This email is duplicates<br>";
+            //     $save = false;
+            // }
             
 
             $passd = htmlspecialchars(strip_tags($_POST['passd']));
@@ -115,6 +157,17 @@ function validateDate($date, $format = 'Y-n-j')
                 $save = false;
             } elseif (strlen($passd) <= 5||!preg_match("/[a-z]/", $passd) || !preg_match("/[A-Z]/", $passd) || !preg_match("/[1-9]/", $passd)) {
                 $msg = $msg . "Invalid password format (Password format should be more than 6 character, at least 1 uppercase, 1 lowercase & 1 number)<br>";
+                $save = false;
+            }
+            // if (isset($_POST['confirmpassd'])) {
+            //     echo "hihi";
+            // }else
+            $confirmpassd = $_POST['confirmpassd'];
+            if (empty($confirmpassd)) {
+                $msg = $msg . "Please do not leave confirm password empty<br>";
+                $save = false;
+            }elseif ($confirmpassd != $passd){
+                $msg = $msg ."Password must be same with confirm password";
                 $save = false;
             }
 
@@ -147,73 +200,75 @@ function validateDate($date, $format = 'Y-n-j')
                 $save = false;
             }
 
+                // write update query
+                // in this case, it seemed like we have so many fields to pass and
+                // it is better to label them and not use question marks
+                $query = "UPDATE customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, confirmpassd=:confirmpassd, birth_date=:birth_date, gender=:gender, status=:status WHERE id = :id";
 
-            // include database connection
-            include 'config/database.php';
-            try {
-                // insert query
-                $query = "INSERT INTO customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, birth_date=:birth_date, gender=:gender, status=:status, created=:created";
-                // prepare query for execution
                 $stmt = $con->prepare($query);
-
-                // bind the parameters
                 $stmt->bindParam(':firstname', $firstname);
                 $stmt->bindParam(':lastname', $lastname);
                 $stmt->bindParam(':email', $email);
                 $stmt->bindParam(':passd', $passd);
+                $stmt->bindParam(':confirmpassd', $confirmpassd);
                 $stmt->bindParam(':birth_date', $birth_date);
                 $stmt->bindParam(':gender', $gender);
                 $stmt->bindParam(':status', $status);
-                // specify when this record was inserted to the database
-                $created = date('Y-m-d H:i:s');
-                $stmt->bindParam(':created', $created);
-
+                $stmt->bindParam(':id', $id);
+                
                 // Execute the query
-                // if (!empty($stmt->execute())) {
-                //     echo "<div class='alert alert-success'>Record was saved.</div>";
-                // }else {
-                //     echo "<div class='alert alert-danger'>Unable to save record.</div>";
+                // if ($stmt->execute()) {
+                //     echo "<div class='alert alert-success'>Record was updated.</div>";
+                // } else {
+                //     echo "<div class='alert alert-danger'>Unable to update record. Please try again.</div>";
                 // }
-
                 if ($save != false) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";
                     $stmt->execute();
                 } else {
                     echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
                 }
-            }
-            // show error
-            catch (PDOException $exception) {
-                die('ERROR: ' . $exception->getMessage());
-            }
-        }
-        ?>
+         
+            // show errors
+            // catch (PDOException $exception) {
+            //     die('ERROR: ' . $exception->getMessage());
+            // }
+        } ?>
 
-        <!-- html form here where the product information will be entered -->
-        <form name="customer" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return validateForm()" method="post" required>
+
+        <!--we have our html form here where new record information can be updated-->
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>First Name</td>
-                    <td><input type='text' name='firstname' class='form-control' value= "<?php if (isset($_POST['firstname'])) echo $_POST['firstname']; ?>" /></td>
+                    <td><input type='text' name='firstname' value="<?php echo htmlspecialchars($firstname, ENT_QUOTES);  ?>" class='form-control' /></td>
                 </tr>
                 <tr>
                     <td>Last Name</td>
-                    <td><input type='text' name='lastname' class='form-control' value= "<?php if (isset($_POST['lastname'])) echo $_POST['lastname']; ?>" /></td>
+                    <td><input type='text' name='lastname' value="<?php echo htmlspecialchars($lastname, ENT_QUOTES);  ?>" class='form-control' /></td>
                 </tr>
                 <tr>
                     <td>Email</td>
-                    <td><input type='text' name='email' class='form-control' value= "<?php if (isset($_POST['email'])) echo $_POST['email']; ?>" /></td>
+                    <td><textarea name='email' class='form-control'><?php echo htmlspecialchars($email, ENT_QUOTES);  ?></textarea></td>
                 </tr>
                 <tr>
                     <td>Password</td>
-                    <td><input type='text' name='passd' class='form-control' value= "<?php if (isset($_POST['passd'])) echo $_POST['passd']; ?>" /></td>
+                    <td><input type='text' name='passd' value="<?php echo htmlspecialchars($passd, ENT_QUOTES);  ?>" class='form-control' /></td>
                 </tr>
                 <tr>
-                    <td>Date of Birth</td>
+                    <td>Confirm Password</td>
+                    <td><input type='text' name='confirmpassd' value="<?php if (isset($_POST['confirmpassd'])) echo $_POST['confirmpassd']; ?>" class='form-control' /></td>
+                </tr>
+                <tr>
+                    <td>Date of Birth </td>
                     <td>
                         <?php
-                        $yearago = date("Y",strtotime('18 years ago'));
-                        dropdown($sday = "", $smonth = "", $syear = $yearago, $datetype = "birth_date");
+                        $yearsave_birth = substr($birth_date,0,4);
+                        $monthsave_birth = substr($birth_date,5,2);
+                        $daysave_birth = substr($birth_date,8,2);
+                        //echo $row['manu_date'];
+                        //echo $manu_date;
+                        dropdown($sday = $daysave_birth, $smonth = $monthsave_birth, $syear = $yearsave_birth, $datetype = "birth_date");
                         ?>
                     </td>
 
@@ -221,21 +276,21 @@ function validateDate($date, $format = 'Y-n-j')
                 <tr>
                     <td>Gender</td>
                     <td>
-                        <input type="radio" name="gender" value="male" <?php if (isset($_POST["gender"])&&($gender == "male")) echo 'checked'; ?>><label>Male</label>&nbsp;
-                        <input type="radio" name="gender" value="female" <?php if (isset($_POST["gender"])&&($gender == "female")) echo 'checked'; ?>><label>Female</label>
+                        <input type="radio" name="gender" value="male" <?php if($gender == "male") echo 'checked'; ?>><label>Male</label>&nbsp;
+                        <input type="radio" name="gender" value="female" <?php if ($gender == "female") echo 'checked'; ?>><label>Female</label>
                     </td>
                 </tr>
                 <tr>
                     <td>Status</td>
                     <td>
-                        <input type="radio" name="status" value="active" <?php if (isset($_POST["status"])&&($status == "active")) echo 'checked'; ?>><label>Active</label>&nbsp;
-                        <input type="radio" name="status" value="deactive" <?php if (isset($_POST["status"])&&($status == "deactive")) echo 'checked'; ?>><label>Deactive</label>
+                        <input type="radio" name="status" value="active" <?php if($status == "active") echo 'checked'; ?>><label>Active</label>&nbsp;
+                        <input type="radio" name="status" value="deactive" <?php if ($status == "deactive") echo 'checked'; ?>><label>Deactive</label>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
-                        <input type='submit' value='Save' class='btn btn-primary' />
+                        <input type='submit' value='Save Changes' class='btn btn-primary' />
                         <a href='customer_read.php' class='btn btn-danger'>Back to read customer list</a>
                     </td>
                 </tr>
@@ -245,7 +300,6 @@ function validateDate($date, $format = 'Y-n-j')
     </div>
     <!-- end .container -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-
 </body>
 
 </html>

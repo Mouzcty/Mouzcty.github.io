@@ -3,7 +3,7 @@ function dropdown($sday = "", $smonth = "", $syear = "", $datetype = "")
 {
 
     if (empty($sday)) {
-        $sday = date('d');
+        $sday = date('j');
     }
 
     if (empty($smonth)) {
@@ -46,7 +46,7 @@ function dropdown($sday = "", $smonth = "", $syear = "", $datetype = "")
 }
 ?>
 <?php
-function validateDate($date, $format = 'Y-n-d')
+function validateDate($date, $format = 'Y-n-j')
 {
     $d = DateTime::createFromFormat($format, $date);
     // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
@@ -115,8 +115,9 @@ function validateDate($date, $format = 'Y-n-d')
             }
 
             //status check//
-            $status = htmlspecialchars(strip_tags($_POST['status']));
-            if (empty($status)) {
+            if (isset($_POST['status'])) {
+                $status = htmlspecialchars(strip_tags($_POST['status']));
+            }else {
                 $msg = $msg . "Please do not leave status empty<br>";
                 $save = false;
             }
@@ -152,7 +153,7 @@ function validateDate($date, $format = 'Y-n-d')
                     echo "<div class='alert alert-success'>Record was saved.</div>";
                     $stmt->execute();
                 } else {
-                    echo "<div class='alert alert-danger'>Unable to save record:<br>$msg</div>";
+                    echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
                 }
             }
             // show error
@@ -167,15 +168,15 @@ function validateDate($date, $format = 'Y-n-d')
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Name</td>
-                    <td><input type='text' name='name' class='form-control' value /></td>
+                    <td><input type='text' name='name' class='form-control' value = "<?php if (isset($_POST['name'])) echo $_POST['name']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Description</td>
-                    <td><textarea name='description' class='form-control'></textarea></td>
+                    <td><textarea name='description' class='form-control'><?php if (isset($_POST['description'])) echo $_POST['description']; ?></textarea></td>
                 </tr>
                 <tr>
                     <td>Price</td>
-                    <td><input type='text' name='price' class='form-control' /></td>
+                    <td><input type='text' name='price' class='form-control' value = "<?php if (isset($_POST['price'])) echo $_POST['price']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Manufacture date </td>
@@ -197,8 +198,8 @@ function validateDate($date, $format = 'Y-n-d')
                 <tr>
                     <td>Status</td>
                     <td>
-                        <input type="radio" name="status" value="available" checked><label>Available</label>&nbsp;
-                        <input type="radio" name="status" value="not_available"><label>Not Available</label>
+                        <input type="radio" name="status" value="available" <?php if (isset($_POST["status"])&&($status == "available")) echo 'checked'; ?>><label>Available</label>&nbsp;
+                        <input type="radio" name="status" value="not_available" <?php if (isset($_POST["status"])&&($status == "not_available")) echo 'checked'; ?>><label>Not Available</label>
                     </td>
                 </tr>
                 <tr>
