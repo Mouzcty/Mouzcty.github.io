@@ -159,14 +159,9 @@ function validateDate($date, $format = 'Y-n-j')
                 $msg = $msg . "Invalid password format (Password format should be more than 6 character, at least 1 uppercase, 1 lowercase & 1 number)<br>";
                 $save = false;
             }
-            // if (isset($_POST['confirmpassd'])) {
-            //     echo "hihi";
-            // }else
+            
             $confirmpassd = $_POST['confirmpassd'];
-            if (empty($confirmpassd)) {
-                $msg = $msg . "Please do not leave confirm password empty<br>";
-                $save = false;
-            }elseif ($confirmpassd != $passd){
+            if ($confirmpassd != $passd){
                 $msg = $msg ."Password must be same with confirm password";
                 $save = false;
             }
@@ -203,14 +198,13 @@ function validateDate($date, $format = 'Y-n-j')
                 // write update query
                 // in this case, it seemed like we have so many fields to pass and
                 // it is better to label them and not use question marks
-                $query = "UPDATE customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, confirmpassd=:confirmpassd, birth_date=:birth_date, gender=:gender, status=:status WHERE id = :id";
+                $query = "UPDATE customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, birth_date=:birth_date, gender=:gender, status=:status WHERE id = :id";
 
                 $stmt = $con->prepare($query);
                 $stmt->bindParam(':firstname', $firstname);
                 $stmt->bindParam(':lastname', $lastname);
                 $stmt->bindParam(':email', $email);
                 $stmt->bindParam(':passd', $passd);
-                $stmt->bindParam(':confirmpassd', $confirmpassd);
                 $stmt->bindParam(':birth_date', $birth_date);
                 $stmt->bindParam(':gender', $gender);
                 $stmt->bindParam(':status', $status);
