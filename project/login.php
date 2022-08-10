@@ -105,7 +105,7 @@
 
         <!-- HTML read one record table will be here -->
         <!--we have our html table here where the record will be displayed-->
-        <form method="POST">
+        <form  action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Email</td>
