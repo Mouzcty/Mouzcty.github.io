@@ -89,24 +89,31 @@ function validateDate($date, $format = 'Y-n-j')
             }
 
             //email//
+            
+
             $email = htmlspecialchars(strip_tags($_POST['email']));
             if (empty($email)) {
                 $msg = $msg . "Please do not leave email empty<br>";
                 $save = false;
             } elseif (!preg_match("/@/", $email)) {
                 $msg = $msg . "Invalid email format<br>";
-                $save = false;
+                $save = false;        
             }
-            include 'config/database.php';
-            $query = "SELECT email FROM customer WHERE email=:email";
-            $stmt = $con->prepare($query);
-            $stmt->bindParam(':email', $email);
-            $stmt->execute();
-            $num = $stmt->rowCount();
-            if ($num>0){
-                $msg = $msg . "This email is duplicates<br>";
-                $save = false;
+            if(isset($email)){
+                include 'config/database.php';
+                    $query = "SELECT email FROM customer WHERE email=:email";
+                    $stmt = $con->prepare($query);
+                    $stmt->bindParam(':email', $email);
+                    $stmt->execute();
+                    $num = $stmt->rowCount();
+                if ($num<=0){
+                    $msg = $msg . "This email is not fund<br>";
+                    $save = false;
+                }
             }
+            //var_dump($email);
+            
+            
             
 
             $passd = htmlspecialchars(strip_tags($_POST['passd']));
