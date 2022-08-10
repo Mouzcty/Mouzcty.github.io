@@ -21,6 +21,13 @@
         include 'config/database.php';
 
         // delete message prompt will be here
+        $action = isset($_GET['action']) ? $_GET['action'] : "";
+ 
+        // if it was redirected from delete.php
+        if($action=='deleted'){
+            echo "<div class='alert alert-success'>Record was deleted.</div>";
+        }
+
 
         // select all data
         $query = "SELECT id, name, description, price FROM products ORDER BY id DESC";
@@ -87,6 +94,19 @@
     </div> <!-- end .container -->
 
     <!-- confirm delete record will be here -->
+    <script>
+    // confirm record deletion
+    function delete_user( id ){
+        
+        var answer = confirm('Are you sure?');
+        if (answer){
+            // if user clicked ok,
+            // pass the id to delete.php and execute the delete query
+            window.location = 'product_delete.php?id=' + id;
+        }
+    }
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 

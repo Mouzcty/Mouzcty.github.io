@@ -94,7 +94,7 @@ function validateDate($date, $format = 'Y-n-j')
                 $msg = $msg . "Please do not leave email empty<br>";
                 $save = false;
             } elseif (!preg_match("/@/", $email)) {
-                $msg = "Invalid email format<br>";
+                $msg = $msg . "Invalid email format<br>";
                 $save = false;
             }
             include 'config/database.php';
@@ -104,7 +104,7 @@ function validateDate($date, $format = 'Y-n-j')
             $stmt->execute();
             $num = $stmt->rowCount();
             if ($num>0){
-                $msg = "This email is duplicates<br>";
+                $msg = $msg . "This email is duplicates<br>";
                 $save = false;
             }
             
