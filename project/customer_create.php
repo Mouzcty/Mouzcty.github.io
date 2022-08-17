@@ -95,22 +95,25 @@ function validateDate($date, $format = 'Y-n-j')
             if (empty($email)) {
                 $msg = $msg . "Please do not leave email empty<br>";
                 $save = false;
-            } elseif (!preg_match("/@/", $email)) {
+            } else{
+                if (!preg_match("/@/", $email)) {
                 $msg = $msg . "Invalid email format<br>";
                 $save = false;        
-            }
-            if(isset($email)){
-                include 'config/database.php';
-                    $query = "SELECT email FROM customer WHERE email=:email";
-                    $stmt = $con->prepare($query);
-                    $stmt->bindParam(':email', $email);
-                    $stmt->execute();
-                    $num = $stmt->rowCount();
-                if ($num<=0){
-                    $msg = $msg . "This email is not fund<br>";
-                    $save = false;
+                }
+                if(isset($email)){
+                    include 'config/database.php';
+                        $query = "SELECT email FROM customer WHERE email=:email";
+                        $stmt = $con->prepare($query);
+                        $stmt->bindParam(':email', $email);
+                        $stmt->execute();
+                        $num = $stmt->rowCount();
+                    if ($num >0){
+                        $msg = $msg . "This email is duplicates<br>";
+                        $save = false;
+                    }
                 }
             }
+            
             //var_dump($email);
             
             
@@ -120,9 +123,11 @@ function validateDate($date, $format = 'Y-n-j')
             if (empty($passd)) {
                 $msg = $msg . "Please do not leave password empty<br>";
                 $save = false;
-            } elseif (strlen($passd) <= 5||!preg_match("/[a-z]/", $passd) || !preg_match("/[A-Z]/", $passd) || !preg_match("/[1-9]/", $passd)) {
+            } else{
+                if (strlen($passd) <= 5||!preg_match("/[a-z]/", $passd) || !preg_match("/[A-Z]/", $passd) || !preg_match("/[1-9]/", $passd)) {
                 $msg = $msg . "Invalid password format (Password format should be more than 6 character, at least 1 uppercase, 1 lowercase & 1 number)<br>";
                 $save = false;
+                }
             }
 
             //birth date check//
@@ -154,12 +159,69 @@ function validateDate($date, $format = 'Y-n-j')
                 $save = false;
             }
 
+            // new 'image' field
+            $image=!empty($_FILES["pimage"]["name"])
+            ? sha1_file($_FILES['pimage']['tmp_name']) . "-" . basename($_FILES["pimage"]["name"])
+            : "";
+            $image=htmlspecialchars(strip_tags($image));
+            if(($image)){
+ 
+                $target_directory = "customeruploads/";
+                $target_file = $target_directory . $image;
+                $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
+             
+                // error message is empty
+                //$file_upload_error_messages="";
+                
+                // make sure certain file types are allowed
+                $allowed_file_types = array("jpg", "jpeg", "png", "gif");
+                if(!in_array($file_type, $allowed_file_types)){
+                    $msg = $msg ."<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
+                    $save = false;
+                }
+                // make sure file does not exist
+                if(file_exists($target_file)){
+                    $msg = $msg ."<div>Image already exists. Try to change file name.</div>";
+                    $save = false;
+                }
+                // make sure submitted file is not too large, can't be larger than 1MB
+                if($_FILES['pimage']['size'] > 1024000){
+                    $msg = $msg ."<div>Image must be less than 1 MB in size.</div>";
+                    $save = false;
+                }
+                // make sure the 'uploads' folder exists
+                // if not, create it
+                if(!is_dir($target_directory)){
+                    mkdir($target_directory, 0777, true);
+                }
+
+            }
+            // // if $file_upload_error_messages is still empty
+            // if(empty($file_upload_error_messages)){
+            //     // it means there are no errors, so try to upload the file
+            //     if(move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)){
+            //         // it means photo was uploaded
+            //     }else{
+            //         echo "<div class='alert alert-danger'>";
+            //             echo "<div>Unable to upload photo.</div>";
+            //             echo "<div>Update the record to upload photo.</div>";
+            //         echo "</div>";
+            //     }
+            // }// if $file_upload_error_messages is NOT empty
+            // else{
+            //     // it means there are some errors, so show them to user
+            //     echo "<div class='alert alert-danger'>";
+            //         echo "<div>{$file_upload_error_messages}</div>";
+            //         echo "<div>Update the record to upload photo.</div>";
+            //     echo "</div>";
+            // }
+
 
             // include database connection
             include 'config/database.php';
             try {
                 // insert query
-                $query = "INSERT INTO customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, birth_date=:birth_date, gender=:gender, status=:status, created=:created";
+                $query = "INSERT INTO customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, birth_date=:birth_date, gender=:gender, status=:status, image=:image, created=:created";
                 // prepare query for execution
                 $stmt = $con->prepare($query);
 
@@ -171,6 +233,7 @@ function validateDate($date, $format = 'Y-n-j')
                 $stmt->bindParam(':birth_date', $birth_date);
                 $stmt->bindParam(':gender', $gender);
                 $stmt->bindParam(':status', $status);
+                $stmt->bindParam(':image', $image);
                 // specify when this record was inserted to the database
                 $created = date('Y-m-d H:i:s');
                 $stmt->bindParam(':created', $created);
@@ -185,8 +248,20 @@ function validateDate($date, $format = 'Y-n-j')
                 if ($save != false) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";
                     $stmt->execute();
+                    if(move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)){
+                        // it means photo was uploaded
+                    }else{
+                        echo "<div class='alert alert-danger'>";
+                            echo "<div>Unable to upload photo.</div>";
+                            echo "<div>Update the record to upload photo.</div>";
+                        echo "</div>";
+                    }
                 } else {
                     echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
+                    // echo "<div class='alert alert-danger'>";
+                    // echo "<div>{$file_upload_error_messages}</div>";
+                    // echo "<div>Update the record to upload photo.</div>";
+                    // echo "</div>";
                 }
             }
             // show error
@@ -197,7 +272,7 @@ function validateDate($date, $format = 'Y-n-j')
         ?>
 
         <!-- html form here where the product information will be entered -->
-        <form name="customer" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return validateForm()" method="post" required>
+        <form name="customer" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return validateForm()" method="post" enctype="multipart/form-data" required>
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>First Name</td>
@@ -238,6 +313,10 @@ function validateDate($date, $format = 'Y-n-j')
                         <input type="radio" name="status" value="active" <?php if (isset($_POST["status"])&&($status == "active")) echo 'checked'; ?>><label>Active</label>&nbsp;
                         <input type="radio" name="status" value="deactive" <?php if (isset($_POST["status"])&&($status == "deactive")) echo 'checked'; ?>><label>Deactive</label>
                     </td>
+                </tr>
+                <tr>
+                    <td>Photo</td>
+                    <td><input type="file" name="pimage" /></td>
                 </tr>
                 <tr>
                     <td></td>

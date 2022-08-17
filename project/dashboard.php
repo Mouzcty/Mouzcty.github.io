@@ -9,10 +9,12 @@
 </head>
 
 <body>
+    
     <!-- container -->
     <div class="container">
         <div class="page-header">
-            <h1>Read Products</h1>
+        <h1>Dashboard</h2>
+        <h2>Read Products</h2>
         </div>
 
         <!-- PHP code to read records will be here -->
@@ -23,16 +25,12 @@
         // delete message prompt will be here
 
         // select all data
-        $query = "SELECT id, name, description, price FROM products ORDER BY id DESC";
+        $query = "SELECT id, name, description, price, image FROM products ORDER BY id DESC LIMIT 4";
         $stmt = $con->prepare($query);
         $stmt->execute();
 
         // this is how to get number of rows returned
         $num = $stmt->rowCount();
-
-        // link to create record form
-        echo "<a href='product_create.php' class='btn btn-primary m-b-1em'>Create New Product</a>";
-
 
         //check if more than 0 record found
         if ($num > 0) {
@@ -46,11 +44,12 @@
             echo "<th>Name</th>";
             echo "<th>Description</th>";
             echo "<th>Price</th>";
-            echo "<th>Action</th>";
+            echo "<th>Image</th>";
             echo "</tr>";
 
             // table body will be here
             // retrieve our table contents
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 // extract row
                 // this will make $row['firstname'] to just $firstname only
@@ -61,16 +60,11 @@
                 echo "<td>{$name}</td>";
                 echo "<td>{$description}</td>";
                 echo "<td>{$price}</td>";
-                echo "<td>";
-                // read one record
-                echo "<a href='product_read_one.php?id={$id}' class='btn btn-info m-r-1em'>Read</a>";
-
-                // we will use this links on next part of this post
-                echo "<a href='product_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a>";
-
-                // we will use this links on next part of this post
-                echo "<a href='#' onclick='delete_user({$id});'  class='btn btn-danger'>Delete</a>";
-                echo "</td>";
+                if(empty($image)){
+                    echo"<td><img src='uploads/photocomingsoon.png' width='auto' height='150px'></td>";
+                }else{
+                    echo "<td><img src='uploads/{$image}'width='auto' height='150px'></td>";
+                }             
                 echo "</tr>";
             }
 
@@ -88,7 +82,7 @@
     <!-- container -->
     <div class="container">
         <div class="page-header">
-            <h1>Customer List</h1>
+            <h2>Customer List</h2>
         </div>
 
         <!-- PHP code to read records will be here -->
@@ -99,16 +93,12 @@
         // delete message prompt will be here
 
         // select all data
-        $query = "SELECT id, firstname, lastname, email, status FROM customer ORDER BY id DESC";
+        $query = "SELECT id, firstname, lastname, email, status, image FROM customer ORDER BY id DESC LIMIT 4";
         $stmt = $con->prepare($query);
         $stmt->execute();
 
         // this is how to get number of rows returned
         $num = $stmt->rowCount();
-
-        // link to create record form
-        echo "<a href='customer_create.php' class='btn btn-primary m-b-1em'>Create Customer</a>";
-
 
         //check if more than 0 record found
         if ($num > 0) {
@@ -123,7 +113,7 @@
             echo "<th>Lastname</th>";
             echo "<th>Email</th>";
             echo "<th>Status</th>";
-            echo "<th>Action</th>";
+            echo "<th>Image</th>";
             echo "</tr>";
 
             // table body will be here
@@ -139,16 +129,11 @@
                 echo "<td>{$lastname}</td>";
                 echo "<td>{$email}</td>";
                 echo "<td>{$status}</td>";
-                echo "<td>";
-                // read one record
-                echo "<a href='customer_read_one.php?id={$id}' class='btn btn-info m-r-1em'>Read</a>";
-
-                // we will use this links on next part of this post
-                echo "<a href='customer_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a>";
-
-                // we will use this links on next part of this post
-                echo "<a href='#' onclick='delete_user({$id});'  class='btn btn-danger'>Delete</a>";
-                echo "</td>";
+                if(empty($image)){
+                    echo"<td><img src='customeruploads/profilepic.png' width='auto' height='150px'></td>";
+                }else{
+                    echo "<td><img src='customeruploads/{$image}'width='auto' height='150px'></td>";
+                }
                 echo "</tr>";
             }
 

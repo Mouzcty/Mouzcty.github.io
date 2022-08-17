@@ -30,7 +30,7 @@
 
 
         // select all data
-        $query = "SELECT id, firstname, lastname, email, status FROM customer ORDER BY id DESC";
+        $query = "SELECT id, firstname, lastname, email, status, image FROM customer ORDER BY id DESC";
         $stmt = $con->prepare($query);
         $stmt->execute();
 
@@ -54,6 +54,7 @@
             echo "<th>Lastname</th>";
             echo "<th>Email</th>";
             echo "<th>Status</th>";
+            echo "<th>Image</th>";
             echo "<th>Action</th>";
             echo "</tr>";
 
@@ -70,6 +71,11 @@
                 echo "<td>{$lastname}</td>";
                 echo "<td>{$email}</td>";
                 echo "<td>{$status}</td>";
+                if(empty($image)){
+                    echo"<td><img src='customeruploads/profilepic.png' width='auto' height='150px'></td>";
+                }else{
+                    echo "<td><img src='customeruploads/{$image}'width='auto' height='150px'></td>";
+                }
                 echo "<td>";
                 // read one record
                 echo "<a href='customer_read_one.php?id={$id}' class='btn btn-info m-r-1em'>Read</a>";

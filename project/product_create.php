@@ -112,15 +112,16 @@ function validateDate($date, $format = 'Y-n-j')
                 $msg = $msg . "Expiry date selected is not exist<br>";
                 $save = false;
             } 
-            if ((int)($x->format("%m") >= 1)) {
+            if((int)($x->format("%m") > 1)){
                 if((int)($x->format("%R%a") <= 0)){
                     $msg = $msg . "Expiry date should not earlier than manufacture date<br>";
                     $save = false;
                 }
-
-            }elseif ((int)($x->format("%m") < 1)){
-                $msg = $msg . "Expiry date should not earlier than manufacture date<br>";
-                $save = false;
+            }else{
+                if ((int)($x->format("%m") < 1)){
+                    $msg = $msg . "Expiry date should earlier than manufacture one month<br>";
+                    $save = false;
+                }
             }
 
             //status check//
@@ -143,20 +144,23 @@ function validateDate($date, $format = 'Y-n-j')
                 $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
              
                 // error message is empty
-                $file_upload_error_messages="";
+                //$file_upload_error_messages="";
                 
                 // make sure certain file types are allowed
                 $allowed_file_types = array("jpg", "jpeg", "png", "gif");
                 if(!in_array($file_type, $allowed_file_types)){
-                    $file_upload_error_messages.="<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
+                    $msg = $msg ."<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
+                    $save = false;
                 }
                 // make sure file does not exist
                 if(file_exists($target_file)){
-                    $file_upload_error_messages.="<div>Image already exists. Try to change file name.</div>";
+                    $msg = $msg ."<div>Image already exists. Try to change file name.</div>";
+                    $save = false;
                 }
                 // make sure submitted file is not too large, can't be larger than 1MB
                 if($_FILES['pimage']['size'] > 1024000){
-                    $file_upload_error_messages.="<div>Image must be less than 1 MB in size.</div>";
+                    $msg = $msg ."<div>Image must be less than 1 MB in size.</div>";
+                    $save = false;
                 }
                 // make sure the 'uploads' folder exists
                 // if not, create it
@@ -166,24 +170,24 @@ function validateDate($date, $format = 'Y-n-j')
 
             }
             // if $file_upload_error_messages is still empty
-            if(empty($file_upload_error_messages)){
-                // it means there are no errors, so try to upload the file
-                if(move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)){
-                    // it means photo was uploaded
-                }else{
-                    echo "<div class='alert alert-danger'>";
-                        echo "<div>Unable to upload photo.</div>";
-                        echo "<div>Update the record to upload photo.</div>";
-                    echo "</div>";
-                }
-            }// if $file_upload_error_messages is NOT empty
-            else{
-                // it means there are some errors, so show them to user
-                echo "<div class='alert alert-danger'>";
-                    echo "<div>{$file_upload_error_messages}</div>";
-                    echo "<div>Update the record to upload photo.</div>";
-                echo "</div>";
-            }
+            // if(empty($file_upload_error_messages)){
+            //     // it means there are no errors, so try to upload the file
+            //     if(move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)){
+            //         // it means photo was uploaded
+            //     }else{
+            //         echo "<div class='alert alert-danger'>";
+            //             echo "<div>Unable to upload photo.</div>";
+            //             echo "<div>Update the record to upload photo.</div>";
+            //         echo "</div>";
+            //     }
+            // }// if $file_upload_error_messages is NOT empty
+            // else{
+            //     // it means there are some errors, so show them to user
+            //     echo "<div class='alert alert-danger'>";
+            //         echo "<div>{$file_upload_error_messages}</div>";
+            //         echo "<div>Update the record to upload photo.</div>";
+            //     echo "</div>";
+            // }
 
 
 
@@ -219,8 +223,20 @@ function validateDate($date, $format = 'Y-n-j')
                 if ($save != false) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";
                     $stmt->execute();
+                    if(move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)){
+                        // it means photo was uploaded
+                    }else{
+                        echo "<div class='alert alert-danger'>";
+                            echo "<div>Unable to upload photo.</div>";
+                            echo "<div>Update the record to upload photo.</div>";
+                        echo "</div>";
+                    }
                 } else {
                     echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
+                    // echo "<div class='alert alert-danger'>";
+                    // echo "<div>{$file_upload_error_messages}</div>";
+                    // echo "<div>Update the record to upload photo.</div>";
+                    // echo "</div>";
                 }
             }
             // show error

@@ -27,7 +27,7 @@
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, name, description, price, manu_date, expr_date, status FROM products WHERE id = ? ";
+            $query = "SELECT id, name, description, price, manu_date, expr_date, status, image FROM products WHERE id = ? ";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -46,6 +46,7 @@
             $manu_date = $row['manu_date'];
             $expr_date = $row['expr_date'];
             $status = $row['status'];
+            $image = $row['image'];
         }
 
         // show error
@@ -80,7 +81,20 @@
             <tr>
                 <td>Status</td>
                 <td><?php echo htmlspecialchars($status, ENT_QUOTES);  ?></td>
+           
+            <tr>
+                <td>Image</td>
+                <td>
+                <?php 
+                if(empty($image)){
+                    echo "<img src='uploads/photocomingsoon.png' width='auto' height='150px'>";
+                }else{
+                    echo "<img src='uploads/{$image}' width='auto' height='150px'>";
+                } 
+                ?>
+                </td>  
             </tr>
+            
             <tr>
                 <td></td>
                 <td>
