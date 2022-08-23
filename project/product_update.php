@@ -210,7 +210,18 @@ function validateDate($date, $format = 'Y-n-j')
                     mkdir($target_directory, 0777, true);
                 }
 
+                if(isset($_POST['filePath'])){
+                    $filePath = $_POST['filePath'];
 
+                    if(file_exists($filePath)){
+                        unlink($filePath);
+                        echo "Your file is delete";
+                    }else{
+                        echo "Your file is not delete";
+                    }
+                }
+
+                
             
 
             
