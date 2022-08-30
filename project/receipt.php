@@ -93,7 +93,7 @@
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td><b>Total Amount</b></td>
-                    <td><?php echo $TotalAmount ?></td>
+                    <td><?php echo"RM&nbsp $TotalAmount"?></td>
                 </tr>
             </table>
     
