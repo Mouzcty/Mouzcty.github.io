@@ -83,7 +83,7 @@
                     echo "<td>{$name}</td>";
                     echo "<td>RM&nbsp{$price}</td>";
                     echo "<td>{$Quantity}</td>";
-                    echo "<td>$totalPrice</td>";
+                    echo "<td>RM&nbsp$totalPrice</td>";
 
                     
                 }
