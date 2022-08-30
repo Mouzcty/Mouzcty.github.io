@@ -9,32 +9,28 @@
     include 'config/database.php';
 
     if($_POST){
+        $customer_id = $_POST['customer'];
+        $query = "INSERT INTO orders SET customer_id=:customer_id, created=:created";
+        $stmt = $con->prepare($query);
+        $stmt->bindParam(':customer_id', $customer_id);
+        $created = date('Y-m-d H:i:s');
+        $stmt->bindParam(':created', $created);
+        $stmt->execute();
+        $order_id = $con->lastInsertId();
+        
+        $quantity = $_POST['quantity'];
         $product_id =$_POST['product'];
-
-            // for($x = 0; $x < count($product_id); $x++){
-                
-            //     $product_id[$x];
-            // }
-            $name = ($_POST['name']);
-            
-
-
-        try {
-            // insert query
-            $query = "INSERT INTO order SET product_id=:product_id, name=:name, created=:created";
-            // prepare query for execution
+        for($i = 0; $i <count($product_id); $i++){
+            $query = "INSERT INTO order_details SET order_id=:order_id, product_id=:product_id, quantity=:quantity";
             $stmt = $con->prepare($query);
-            $stmt->bindParam(':product_id', $product_id);
-            $stmt->bindParam(':name', $name);
-            $created = date('Y-m-d H:i:s');
-            $stmt->bindParam(':created', $created);
+            $stmt->bindParam(':order_id', $order_id);
+            $stmt->bindParam(':product_id', $product_id[$i]);
+            $stmt->bindParam(':quantity', $quantity[$i]);
             $stmt->execute();
+        }
+        header("Location: receipt.php?order_id=$order_id");
+        
             
-            }
-            // show error
-            catch (PDOException $exception) {
-                die('ERROR: ' . $exception->getMessage());
-            }
     }
 
     
@@ -43,6 +39,33 @@
 <body>
     <form action="" method="post">
         <table class="table">
+        <tr class="customer-row">
+                <td>Customer</td>
+                <td>
+                    <div class="row">
+                        <div class="col">
+                        <?php   
+                            $query = "SELECT id, firstname FROM customer ORDER BY id DESC";
+                            $stmt = $con->prepare($query);
+                            $stmt->execute();
+
+                            // this is how to get number of rows returned
+                            $customer_num = $stmt->rowCount();
+                            if($customer_num > 0){
+                                echo '<select name="customer">';
+                                    while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+                                        extract($row);
+                                        echo "<option value='$id'>$firstname</option>";
+                                    }
+                                    
+                                echo '</select>';
+                            }     
+                        ?>
+                        </div>
+                        </div>
+                    </td>
+                </tr>
+                        
             <tr class="product-row">
                 <td>Product</td>
                 <td>
@@ -56,16 +79,14 @@
                             // this is how to get number of rows returned
                             $product_num = $stmt->rowCount();
                             if($product_num > 0){
-                                echo '<select name="product">';
+                                echo '<select name="product[]">';
                                     while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
                                         extract($row);
                                         echo "<option value='$id'>$name</option>";
                                     }
-                                    echo $name;
+                                    
                                 echo '</select>';
-                            }
-                            
-                               
+                            }     
                         ?>
                         </div>
                         <div class="col">
@@ -86,7 +107,7 @@
                     </div>
                 </td>
             </tr>
-            <tr><td><input type="text" name="name"></td></tr>
+            
             <tr>
                 <td colspan="2">
                     <div class="d-flex justify-content-center flex-column flex-lg-row">
