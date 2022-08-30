@@ -3,6 +3,7 @@
 
 <head>
     <title>Create Order</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
 
 <?php 
@@ -29,14 +30,16 @@
             $stmt->execute();
         }
         header("Location: receipt.php?order_id=$order_id");
-        
-            
     }
 
     
     
 ?>
 <body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Create Order</h1>
+        </div>
     <form action="" method="post">
         <table class="table">
         <tr class="customer-row">
@@ -112,32 +115,17 @@
                 <td colspan="2">
                     <div class="d-flex justify-content-center flex-column flex-lg-row">
                         <div class="d-flex justify-content-center">
-                            <button type="button" class="add_one btn mb-1 mx-2">Add More Product</button>
-                            <button type="button" class="del_last btn mb-1 mx-2">Delete Last Product</button>
-
-                            <button type="submit">Submit</button>
+                            <button type="button" class="add_one btn btn-primary">Add More Product</button>
+                            <button type="button" class="del_last btn btn-info">Delete Last Product</button>
+                            <button type="submit" class="btn btn-danger">Submit</button>
                         </div>
                     </div>
                 </td>
             </tr>
-
         </table>
-
     </form>
+    </div>
 
-    <?php
-
-        //if($_POST){
-           // $product = $_POST['product'];
-            //$quantity = $_POST['quantity'];
-        
-           // for($i=0;$i<count($product);$i++){
-           //     echo $product[$i];
-           //     echo $quantity[$i];
-           //     echo "<br>";
-            //}
-        //}
-     ?>
 
     <script>
         document.addEventListener('click', function(event) {

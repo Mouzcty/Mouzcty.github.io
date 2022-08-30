@@ -222,10 +222,6 @@ function validateDate($date, $format = 'Y-n-j')
                 }
 
                 
-            
-
-            
-
                 // write update query
                 // in this case, it seemed like we have so many fields to pass and
                 // it is better to label them and not use question marks
@@ -345,17 +341,7 @@ function validateDate($date, $format = 'Y-n-j')
                 </tr>
             </table>
         </form>
-            <!-- <form action="deleteimg.php" method="POST">
-                <tr>
-                    <td></td>
-                    <td>
-                        <imput type="text" name="delimg" value="<?php echo $row['image'];?>">
-                    </td>
-                    <td>
-                        <button type="submit" name="deletebtn" class="btn btn-danger" >Delete</button>    
-                    </td>
-                </tr>
-            </form> -->
+            
 
     </div>
     <!-- end .container -->

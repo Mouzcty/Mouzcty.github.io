@@ -2,16 +2,23 @@
 <html>
 
 <head>
-    <title>Receipt</title>
+    <title>PDO - Read One Record - PHP CRUD Tutorial</title>
+    <!-- Latest compiled and minified Bootstrap CSS →
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
-
 <body>
+ 
+    <!-- container -->
     <div class="container">
-    <h1>Receipt</h1>  
-    <?php
+        <div class="page-header">
+            <h1>Read Order’s DETAILS</h1>
+        </div>
+
+        <!-- PHP read one record will be here -->
+        <?php
     //get order_id from url
-    $orderid = $_GET['order_id'];
+    $orderid = $_GET['id'];
     
         include 'config/database.php';
         try{
@@ -83,8 +90,6 @@
                     echo "<td>RM&nbsp{$price}</td>";
                     echo "<td>{$Quantity}</td>";
                     echo "<td>RM&nbsp$totalPrice</td>";
-
-                    
                 }
             }
             ?>
@@ -95,10 +100,9 @@
                     <td><?php echo"RM&nbsp $TotalAmount"?></td>
                 </tr>
             </table>
-    
-    
-    </div>
 
-</body>
+    </div> <!-- end .container -->
+
+    </body>
 
 </html>
