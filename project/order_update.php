@@ -18,7 +18,8 @@
         <!-- PHP read one record will be here -->
         <?php
     //get order_id from url
-    $orderid = $_GET['id'];
+    $orderid = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
+    
     
         include 'config/database.php';
         try{
@@ -65,10 +66,11 @@
             //order product detail
             $query = "SELECT * FROM order_details INNER JOIN products ON order_details.product_id = products.id WHERE order_details.order_id =$orderid";
             $stmt = $con->prepare($query);
-            $stmt->bindParam(':order_details_id', $order_details_id);
+            //$stmt->bindParam(':order_details_id', $order_details_id);
             $stmt->execute();
-            $order_details_id = $row['order_details_id'];
-            echo $order_details_id;
+            // $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            // $order_details_id = $row['order_details_id'];
+            //echo $order_details_id;
             $TotalAmount = 0;
             $num = $stmt->rowCount();
             if ($num > 0) {
@@ -100,20 +102,27 @@
             ?>
 
             <?php
-            if($_POST){
+             if($_POST){
+                $customer_id = $_POST['customer'];
+                $query = "UPDATE orders SET customer_id=:customer_id, created=:created";
+                $stmt = $con->prepare($query);
+                $stmt->bindParam(':customer_id', $customer_id);
+                $created = date('Y-m-d H:i:s');
+                $stmt->bindParam(':created', $created);
+                $stmt->execute();
+                $order_id = $con->lastInsertId();
                 
                 $quantity = $_POST['quantity'];
                 $product_id =$_POST['product'];
-                
                 for($i = 0; $i <count($product_id); $i++){
-                    $query = "UPDATE order_details SET order_id=:order_id, product_id=:product_id, quantity=:quantity WHERE order_details_id=$order_details_id";
+                    $query = "UPDATE order_details SET order_id=:order_id, product_id=:product_id, quantity=:quantity";
                     $stmt = $con->prepare($query);
                     $stmt->bindParam(':order_id', $order_id);
                     $stmt->bindParam(':product_id', $product_id[$i]);
                     $stmt->bindParam(':quantity', $quantity[$i]);
-                    $stmt->bindParam(':order_detail_id', $order_detail_id);
                     $stmt->execute();
                 }
+                header("Location: order_read.php");
                 
             }
             ?>
@@ -126,10 +135,9 @@
             </table>
             
 
-            <form action="" method="post">
-        <table class="table">
-              
-            
+ 
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post">
+            <table class='table'>
 
     <tr class="product-row">
                 <td>Product</td>
@@ -187,6 +195,8 @@
         </table>
     </form>
     </div> <!-- end .container -->
+    
+
     
     
     <script>
