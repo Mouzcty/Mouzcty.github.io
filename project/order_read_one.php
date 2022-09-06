@@ -1,3 +1,11 @@
+<style>
+    .alineright{
+        text-align:right; 
+         float: right;
+         width:50%;
+         display:block;
+    }
+</style>
 <!DOCTYPE HTML>
 <html>
 
@@ -82,15 +90,15 @@
                     // extract row
                     extract($row);
 
-                    $totalPrice = $price*$Quantity;
-                    $TotalAmount = $TotalAmount + $totalPrice;
-                    
+                    $totalPrice = number_format($price*$Quantity,2);
+                    $TotalAmount = number_format($TotalAmount + $totalPrice,2);
+                    $priceformat = number_format($price,2)."<br>";
                     // creating new table row per record
                     echo "<tr>";
                     echo "<td>{$name}</td>";
-                    echo "<td>RM&nbsp{$price}</td>";
+                    echo "<td><div class='alineright'>RM&nbsp{$priceformat}</div></td>";
                     echo "<td>{$Quantity}</td>";
-                    echo "<td>RM&nbsp$totalPrice</td>";
+                    echo "<td><div class='alineright'>RM&nbsp$totalPrice</div></td>";
                 }
             }
             ?>
@@ -98,7 +106,14 @@
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td><b>Total Amount</b></td>
-                    <td><?php echo"RM&nbsp $TotalAmount"?></td>
+                    <td>
+                    <div class="alineright">
+                        <span>
+                        <?php echo"RM&nbsp $TotalAmount"?>
+                        </span>
+                    </div>
+                    </td>
+                    
                 </tr>
             </table>
 

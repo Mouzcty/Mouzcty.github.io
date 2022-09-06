@@ -39,7 +39,7 @@
             //print_r( $product_id) ;
 
             for ($i = 0; $i < count($product_id); $i++) {
-                try {
+                    try {
                     // write update query
                     // in this case, it seemed like we have so many fields to pass and
                     // it is better to label them and not use question marks
@@ -97,14 +97,7 @@
             catch (PDOException $exception) {
                 die('ERROR: ' . $exception->getMessage());
             }
-
-
-
-
-
-        
-
-
+        }
 
         ?>
 
@@ -169,7 +162,7 @@
                 <a href='order_read.php' class='btn btn-danger'>Back to Order List</a>
             </div>
         </form>
-        <?php }?>
+        
 
 
     </div>
