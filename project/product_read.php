@@ -11,6 +11,7 @@
 <body>
     <!-- container -->
     <div class="container">
+    <?php include 'header.php';?>
         <div class="page-header">
             <h1>Read Products</h1>
         </div>
@@ -28,6 +29,9 @@
             echo "<div class='alert alert-success'>Record was deleted.</div>";
         }
 
+        if($action=='cantdelate'){
+            echo "<div class='alert alert-danger'>Product can not be deleted.</div>";
+        }
 
         // select all data
         $query = "SELECT id, name, description, price, image FROM products ORDER BY id DESC";

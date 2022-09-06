@@ -67,6 +67,7 @@ function validateDate($date, $format = 'Y-n-j')
 <body>
     <!-- container -->
     <div class="container">
+    <?php include 'header.php';?>
         <div class="page-header">
             <h1>Create Customer</h1>
         </div>

@@ -7,6 +7,7 @@
 </head>
 
 <?php 
+    
     include 'config/database.php';
 
     if($_POST){
@@ -37,6 +38,7 @@
 ?>
 <body>
     <div class="container">
+    <?php include 'header.php';?>
         <div class="page-header">
             <h1>Create Order</h1>
         </div>

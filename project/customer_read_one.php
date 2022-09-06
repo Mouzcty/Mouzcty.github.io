@@ -11,6 +11,7 @@
  
     <!-- container -->
     <div class="container">
+    <?php include 'header.php';?>
         <div class="page-header">
             <h1>Read Customer’s DETAILS</h1>
         </div>

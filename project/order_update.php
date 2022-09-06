@@ -11,6 +11,7 @@
  
     <!-- container -->
     <div class="container">
+    <?php include 'header.php';?>
         <div class="page-header">
             <h1>Update Order</h1>
         </div>
@@ -18,7 +19,7 @@
         <!-- PHP read one record will be here -->
         <?php
     //get order_id from url
-    $orderid = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
+    $orderid = isset($_GET['orderID']) ? $_GET['orderID'] : die('ERROR: Record ID not found.');
     
     
         include 'config/database.php';
@@ -41,7 +42,7 @@
             die('ERROR: ' . $exception->getMessage());
         }
 
-        
+    
 
 
     ?>
@@ -66,11 +67,11 @@
             //order product detail
             $query = "SELECT * FROM order_details INNER JOIN products ON order_details.product_id = products.id WHERE order_details.order_id =$orderid";
             $stmt = $con->prepare($query);
-            //$stmt->bindParam(':order_details_id', $order_details_id);
+            $stmt->bindParam(':order_details_id', $order_details_id);
             $stmt->execute();
-            // $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            // $order_details_id = $row['order_details_id'];
-            //echo $order_details_id;
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $order_details_id = $row['order_details_id'];
+            echo $order_details_id;
             $TotalAmount = 0;
             $num = $stmt->rowCount();
             if ($num > 0) {
@@ -103,21 +104,25 @@
 
             <?php
              if($_POST){
-                $customer_id = $_POST['customer'];
-                $query = "UPDATE orders SET customer_id=:customer_id, created=:created";
+
+                $query = "DELETE FROM order_details WHERE order_id = $orderid";
                 $stmt = $con->prepare($query);
-                $stmt->bindParam(':customer_id', $customer_id);
-                $created = date('Y-m-d H:i:s');
-                $stmt->bindParam(':created', $created);
                 $stmt->execute();
-                $order_id = $con->lastInsertId();
+
+                //$customer_id = $_POST['customer'];
+                // $query = "UPDATE orders SET customer_id=:customer_id, created=:created";
+                // $stmt = $con->prepare($query);
+                // $stmt->bindParam(':customer_id', $customer_id);
+                // $created = date('Y-m-d H:i:s');
+                // $stmt->bindParam(':created', $created);
+                // $stmt->execute();
+                //$order_id = $con->lastInsertId();
                 
                 $quantity = $_POST['quantity'];
                 $product_id =$_POST['product'];
                 for($i = 0; $i <count($product_id); $i++){
-                    $query = "UPDATE order_details SET order_id=:order_id, product_id=:product_id, quantity=:quantity";
+                    $query = "INSERT INTO order_details SET product_id=:product_id, quantity=:quantity";
                     $stmt = $con->prepare($query);
-                    $stmt->bindParam(':order_id', $order_id);
                     $stmt->bindParam(':product_id', $product_id[$i]);
                     $stmt->bindParam(':quantity', $quantity[$i]);
                     $stmt->execute();
@@ -152,7 +157,7 @@
                             // this is how to get number of rows returned
                             $product_num = $stmt->rowCount();
                             if($product_num > 0){
-                                echo '<select name="product[]">';
+                                echo '<select name="product_id[]">';
                                     while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
                                         extract($row);
                                         echo "<option value='$id'>$name</option>";

@@ -81,6 +81,7 @@
     </div> <!-- end .container -->
     <!-- container -->
     <div class="container">
+    <?php include 'header.php';?>
         <div class="page-header">
             <h2>Customer List</h2>
         </div>

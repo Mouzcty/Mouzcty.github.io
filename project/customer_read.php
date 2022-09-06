@@ -11,6 +11,7 @@
 <body>
     <!-- container -->
     <div class="container">
+    <?php include 'header.php';?>
         <div class="page-header">
             <h1>Customer List</h1>
         </div>
@@ -26,6 +27,10 @@
         // if it was redirected from delete.php
         if($action=='deleted'){
             echo "<div class='alert alert-success'>Record was deleted.</div>";
+        }
+
+        if($action=='cantdelate'){
+            echo "<div class='alert alert-danger'>Customer can not be deleted.</div>";
         }
 
 

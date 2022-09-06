@@ -11,6 +11,7 @@
  
     <!-- container -->
     <div class="container">
+    <?php include 'header.php';?>
         <div class="page-header">
             <h1>Read Order’s DETAILS</h1>
         </div>
@@ -18,7 +19,7 @@
         <!-- PHP read one record will be here -->
         <?php
     //get order_id from url
-    $orderid = $_GET['id'];
+    $orderid = $_GET['orderID'];
     
         include 'config/database.php';
         try{
