@@ -8,9 +8,9 @@
 <?php
 // used to connect to the database
 $host = "localhost";
-$db_name = "mouz";
-$username = "mouz";
-$password = "0956";
+$db_name = "tienyong";
+$username = "root";
+$password = "";
   
 try {
     $con = new PDO("mysql:host={$host};dbname={$db_name}", $username, $password);

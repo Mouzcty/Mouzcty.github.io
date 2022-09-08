@@ -1,3 +1,12 @@
+<?php
+session_start();
+if(isset($_SESSION["email"])){
+    //echo "Favorite color is " . $_SESSION["email"] . ".<br>";
+}else{
+    //echo "favcolor havent set";
+    header('Location: login.php');
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -12,6 +21,7 @@
     
     <!-- container -->
     <div class="container">
+    <?php include 'header.php';?>
         <div class="page-header">
         <h1>Dashboard</h2>
         <h2>Read Products</h2>
@@ -81,7 +91,7 @@
     </div> <!-- end .container -->
     <!-- container -->
     <div class="container">
-    <?php include 'header.php';?>
+    
         <div class="page-header">
             <h2>Customer List</h2>
         </div>
@@ -149,7 +159,7 @@
         ?>
 
     </div> <!-- end .container -->
-
+    <?php include 'footer.php';?>
     <!-- confirm delete record will be here -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>

@@ -53,7 +53,15 @@ function validateDate($date, $format = 'Y-n-j')
     return $d && $d->format($format) === $date;
 }
 ?>
-
+<?php
+session_start();
+if(isset($_SESSION["email"])){
+    //echo "Favorite color is " . $_SESSION["email"] . ".<br>";
+}else{
+    //echo "favcolor havent set";
+    header('Location: login.php');
+}
+?>
 
 <!DOCTYPE HTML>
 <html>
@@ -168,11 +176,6 @@ function validateDate($date, $format = 'Y-n-j')
                 if(!is_dir($target_directory)){
                     mkdir($target_directory, 0777, true);
                 }
-
-            }
-            //if $file_upload_error_messages is still empty
-            if(empty($file_upload_error_messages)){
-                // it means there are no errors, so try to upload the file
                 if(move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)){
                     // it means photo was uploaded
                 }else{
@@ -181,27 +184,8 @@ function validateDate($date, $format = 'Y-n-j')
                         echo "<div>Update the record to upload photo.</div>";
                     echo "</div>";
                 }
-            }// if $file_upload_error_messages is NOT empty
-            else{
-                // it means there are some errors, so show them to user
-                echo "<div class='alert alert-danger'>";
-                    echo "<div>{$file_upload_error_messages}</div>";
-                    echo "<div>Update the record to upload photo.</div>";
-                echo "</div>";
+
             }
-
-            if (isset($_POST['filePath'])){
-                $filePath = $_POST['filePath'];
-
-                if (file_exists($filePath)){
-                    unlink($filePath);
-                    echo "Your file is deleted";
-                }else{
-                    echo "Your file is not deleted";
-                }
-            }
-
-
 
 
 
@@ -225,30 +209,11 @@ function validateDate($date, $format = 'Y-n-j')
                 $created = date('Y-m-d H:i:s');
                 $stmt->bindParam(':created', $created);
 
-                // Execute the query
-                // if (!empty($stmt->execute())) {
-                //     echo "<div class='alert alert-success'>Record was saved.</div>";
-                // }else {
-                //     echo "<div class='alert alert-danger'>Unable to save record.</div>";
-                // }
-
                 if ($save != false) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";
                     $stmt->execute();
-                    if(move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)){
-                        // it means photo was uploaded
-                    }else{
-                        echo "<div class='alert alert-danger'>";
-                            echo "<div>Unable to upload photo.</div>";
-                            echo "<div>Update the record to upload photo.</div>";
-                        echo "</div>";
-                    }
                 } else {
                     echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
-                    // echo "<div class='alert alert-danger'>";
-                    // echo "<div>{$file_upload_error_messages}</div>";
-                    // echo "<div>Update the record to upload photo.</div>";
-                    // echo "</div>";
                 }
             }
             // show error
@@ -299,7 +264,7 @@ function validateDate($date, $format = 'Y-n-j')
                 </tr>
                 <tr>
                     <td>Photo</td>
-                    <td><input type="file" name="pimage" /></td>
+                    <td><input type="file" name="pimage"/></td>
                 </tr>
                 <tr>
                     <td></td>
@@ -313,6 +278,7 @@ function validateDate($date, $format = 'Y-n-j')
 
     </div>
     <!-- end .container -->
+    <?php include 'footer.php';?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
 </body>

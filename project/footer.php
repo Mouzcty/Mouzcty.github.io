@@ -1,11 +1,20 @@
+<style>
+.footer{
+    text-align: center;
+    background: #222;
+    border-bottom: 1px solid #666;
+    color: #eee;
+    font: 24px;
+    text-decoration: none;
+}
+</style>
 <!DOCTYPE html>
 <html>
 <body>
 
-<h1>Welcome to my home page!</h1>
-<p>Some text.</p>
-<p>Some more text.</p>
-
+<footer>
+  <div class="footer"><p>Copyright &copy;DDM211 Web Application</p></div>
+</footer>
 
 </body>
 </html>

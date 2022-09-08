@@ -53,7 +53,15 @@ function validateDate($date, $format = 'Y-n-j')
     return $d && $d->format($format) === $date;
 }
 ?>
-
+<?php
+session_start();
+if (isset($_SESSION["email"])) {
+    //echo "Favorite color is " . $_SESSION["email"] . ".<br>";
+} else {
+    //echo "favcolor havent set";
+    header('Location: login.php');
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -72,12 +80,18 @@ function validateDate($date, $format = 'Y-n-j')
         </div>
         <!-- PHP read record by ID will be here -->
         <?php
+        
         // get passed parameter value, in this case, the record ID
         // isset() is a PHP function used to verify if a value is there or not
         $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 
         //include database connection
         include 'config/database.php';
+
+        $action = isset($_GET['action']) ? $_GET['action'] : "";
+        if($action=='deleteimg'){
+            echo "<div class='alert alert-success'>Image deleted.</div>";
+        }
 
         // read current record's data
         try {
@@ -162,16 +176,24 @@ function validateDate($date, $format = 'Y-n-j')
                     $msg = $msg . "Expiry date should not earlier than manufacture date <br>";
                     $save = false;
                 }
+                //status check//
+                if (isset($_POST['status'])) {
+                    $status = htmlspecialchars(strip_tags($_POST['status']));
+                } else {
+                    $msg = $msg . "Please do not leave status empty<br>";
+                    $save = false;
+                }
+
 
                 // new 'image' field
-                $newimage = !empty($_FILES["image"]["name"])
-                    ? sha1_file($_FILES['image']['tmp_name']) . "-" . basename($_FILES["image"]["name"])
+                $image = !empty($_FILES["pimage"]["name"])
+                    ? sha1_file($_FILES['pimage']['tmp_name']) . "-" . basename($_FILES["pimage"]["name"])
                     : "";
-                $newimage = htmlspecialchars(strip_tags($newimage));
-                if ($newimage) {
+                $image = htmlspecialchars(strip_tags($image));
+                if ($image) {
 
                     $target_directory = "uploads/";
-                    $target_file = $target_directory . $newimage;
+                    $target_file = $target_directory . $image;
                     $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
 
                     // error message is empty
@@ -187,7 +209,7 @@ function validateDate($date, $format = 'Y-n-j')
                         $msg = $msg . "Image already exists. Try to change file name.";
                     }
                     // make sure submitted file is not too large, can't be larger than 1MB
-                    if ($_FILES['image']['size'] > 1024000) {
+                    if ($_FILES['pimage']['size'] > 1024000) {
                         $msg = $msg . "Image must be less than 1 MB in size.";
                     }
                     // make sure the 'uploads' folder exists
@@ -195,38 +217,21 @@ function validateDate($date, $format = 'Y-n-j')
                     if (!is_dir($target_directory)) {
                         mkdir($target_directory, 0777, true);
                     }
-                }
 
-                
-                // if $file_upload_error_messages is still empty
-                if (empty($file_upload_error_messages)) {
-                    // it means there are no errors, so try to upload the file
-                    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+                    //$stmt->execute();
+                    if (move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)) {
                         // it means photo was uploaded
                     } else {
                         echo "<div class='alert alert-danger'>";
                         echo "<div>Unable to upload photo.</div>";
                         echo "<div>Update the record to upload photo.</div>";
                         echo "</div>";
-                        $save = false;
                     }
-                } // if $file_upload_error_messages is NOT empty
-                else {
-                    // it means there are some errors, so show them to user
-                    echo "<div class='alert alert-danger'>";
-                    echo "<div>{$file_upload_error_messages}</div>";
-                    echo "<div>Update the record to upload photo.</div>";
-                    echo "</div>";
-                    $save = false;
+                }else{
+                    $image = $_POST["newimg"];
                 }
+                
 
-                //status check//
-                if (isset($_POST['status'])) {
-                    $status = htmlspecialchars(strip_tags($_POST['status']));
-                } else {
-                    $msg = $msg . "Please do not leave status empty<br>";
-                    $save = false;
-                }
 
                 // write update query
                 // in this case, it seemed like we have so many fields to pass and
@@ -237,27 +242,19 @@ function validateDate($date, $format = 'Y-n-j')
                 $stmt->bindParam(':name', $name);
                 $stmt->bindParam(':description', $description);
                 $stmt->bindParam(':price', $price);
-                $stmt->bindParam(':image', $newimage);
+                $stmt->bindParam(':image', $image);
                 $stmt->bindParam(':manu_date', $manu_date);
                 $stmt->bindParam(':expr_date', $expr_date);
                 $stmt->bindParam(':status', $status);
                 $stmt->bindParam(':id', $id);
-                // Execute the query
-                // if ($stmt->execute()) {
-                //     echo "<div class='alert alert-success'>Record was updated.</div>";
-                // } else {
-                //     echo "<div class='alert alert-danger'>Unable to update record. Please try again.</div>";
-                // }
+
                 if ($save != false) {
-                    echo "<div class='alert alert-success'>Record was saved.</div>";
+                    //echo "<div class='alert alert-success'>Record was saved.</div>";
                     $stmt->execute();
+                    header('Location: product_read.php?action=update');
                 } else {
-                    echo "<div class='alert alert-danger'>Unable to save record:<br>$msg</div>";
+                    echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
                 }
-                if($image != ""){
-                    unlink("uploads/".$image);
-                }
-                $image = $newimage;
             }
             // show errors
             catch (PDOException $exception) {
@@ -283,7 +280,14 @@ function validateDate($date, $format = 'Y-n-j')
                 </tr>
                 <tr>
                     <td>Image</td>
-                    <td><img src="uploads/<?php echo $image; ?>" width="100px" height="100px"><input type='file' name='image'/></td>
+                    <td>
+                        <img src="uploads/<?php echo $image; ?>" width="auto" height="150px">
+                        <input type='file' name='pimage'/>
+
+                        <input type="hidden" name="newimg" value="<?php echo $image; ?>">
+                        
+                        <a href='#' onclick='delete_img(<?php echo$id?>);'  class='btn btn-danger'>Delete Image</a>
+                    </td>
                 </tr>
                 <tr>
                     <td>Manufacture date </td>
@@ -329,6 +333,20 @@ function validateDate($date, $format = 'Y-n-j')
 
     </div>
     <!-- end .container -->
+    <script>
+    // confirm record deletion
+    function delete_img( id ){
+        
+        var answer = confirm('Are you sure?');
+        if (answer){
+            // if user clicked ok,
+            // pass the id to delete.php and execute the delete query
+            window.location = 'productdeleteimg.php?id=' + id ;
+        }
+    }
+    </script>
+
+    <?php include 'footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 

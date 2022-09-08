@@ -1,3 +1,12 @@
+<?php
+session_start();
+if(isset($_SESSION["email"])){
+    //echo "Favorite color is " . $_SESSION["email"] . ".<br>";
+}else{
+    //echo "favcolor havent set";
+    header('Location: login.php');
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -109,7 +118,7 @@
         </table>
 
     </div> <!-- end .container -->
-
+    <?php include 'footer.php';?>
     </body>
 
 </html>

@@ -1,3 +1,8 @@
+<?php
+// Start the session
+session_start();
+?>
+
 <!DOCTYPE HTML>
 <html>
 
@@ -62,13 +67,17 @@
                 }
                 
             }
+            
                       
 
             if ($save != false) {
+                $_SESSION["email"] = $email;
                 header('Location: dashboard.php');
             } else {
                 echo "<div class='alert alert-danger'><b>Unable to login:</b><br>$msg</div>";
-            }           
+            }   
+            
+            
         }
         ?>
 
@@ -96,6 +105,7 @@
 
     </div>
     <!-- end .container -->
+    <?php include 'footer.php';?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
 </body>

@@ -82,18 +82,20 @@
                     // extract row
                     extract($row);
 
-                    $totalPrice = number_format($price*$Quantity,2);
-                    $TotalAmount = number_format($TotalAmount + $totalPrice,2);
+                    $totalPrice = $price*$quantity;
+                    $TotalAmount = $TotalAmount+$totalPrice;
+
                     $priceformat = number_format($price,2)."<br>";
+                    $totalPriceDFmt = number_format($totalPrice,2);
+                    $TotalAmountFmt = number_format($TotalAmount,2);
+
                     
                     // creating new table row per record
                     echo "<tr>";
                     echo "<td>{$name}</td>";
                     echo "<td><div class='alineright'>RM&nbsp{$priceformat}</div></td>";
-                    echo "<td>{$Quantity}</td>";
-                    echo "<td><div class='alineright'>RM&nbsp$totalPrice</div></td>";
-
-                    
+                    echo "<td>{$quantity}</td>";
+                    echo "<td><div class='alineright'>RM&nbsp$totalPriceDFmt</div></td>";
                 }
             }
             ?>
@@ -103,8 +105,8 @@
                     <td><b>Total Amount</b></td>
                     <td>
                     <div class="alineright">
-                        <span>
-                        <?php echo"RM&nbsp $TotalAmount"?>
+                        <span> 
+                        <?php echo"RM&nbsp $TotalAmountFmt"?>
                         </span>
                     </div>
                     </td>
@@ -113,6 +115,7 @@
     
     
     </div>
+    <?php include 'footer.php';?>
 
 </body>
 

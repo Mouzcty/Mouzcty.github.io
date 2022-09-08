@@ -13,7 +13,7 @@ function dropdown($sday = "", $smonth = "", $syear = "", $datetype = "")
     if (empty($syear)) {
         $syear = date('Y');
     }
-    
+
     //---v---select day---v---//
     $nameday = $datetype . "_day";
     $namemonth = $datetype . "_month";
@@ -53,7 +53,12 @@ function validateDate($date, $format = 'Y-n-j')
     return $d && $d->format($format) === $date;
 }
 ?>
-
+<?php
+session_start();
+if (!isset($_SESSION["email"])) {
+    header('Location: login.php');
+}
+?>
 
 <!DOCTYPE HTML>
 <html>
@@ -67,7 +72,7 @@ function validateDate($date, $format = 'Y-n-j')
 <body>
     <!-- container -->
     <div class="container">
-    <?php include 'header.php';?>
+        <?php include 'header.php'; ?>
         <div class="page-header">
             <h1>Create Customer</h1>
         </div>
@@ -90,44 +95,44 @@ function validateDate($date, $format = 'Y-n-j')
             }
 
             //email//
-            
+
 
             $email = htmlspecialchars(strip_tags($_POST['email']));
             if (empty($email)) {
                 $msg = $msg . "Please do not leave email empty<br>";
                 $save = false;
-            } else{
+            } else {
                 if (!preg_match("/@/", $email)) {
-                $msg = $msg . "Invalid email format<br>";
-                $save = false;        
+                    $msg = $msg . "Invalid email format<br>";
+                    $save = false;
                 }
-                if(isset($email)){
+                if (isset($email)) {
                     include 'config/database.php';
-                        $query = "SELECT email FROM customer WHERE email=:email";
-                        $stmt = $con->prepare($query);
-                        $stmt->bindParam(':email', $email);
-                        $stmt->execute();
-                        $num = $stmt->rowCount();
-                    if ($num >0){
+                    $query = "SELECT email FROM customer WHERE email=:email";
+                    $stmt = $con->prepare($query);
+                    $stmt->bindParam(':email', $email);
+                    $stmt->execute();
+                    $num = $stmt->rowCount();
+                    if ($num > 0) {
                         $msg = $msg . "This email is duplicates<br>";
                         $save = false;
                     }
                 }
             }
-            
+
             //var_dump($email);
-            
-            
-            
+
+
+
 
             $passd = htmlspecialchars(strip_tags($_POST['passd']));
             if (empty($passd)) {
                 $msg = $msg . "Please do not leave password empty<br>";
                 $save = false;
-            } else{
-                if (strlen($passd) <= 5||!preg_match("/[a-z]/", $passd) || !preg_match("/[A-Z]/", $passd) || !preg_match("/[1-9]/", $passd)) {
-                $msg = $msg . "Invalid password format (Password format should be more than 6 character, at least 1 uppercase, 1 lowercase & 1 number)<br>";
-                $save = false;
+            } else {
+                if (strlen($passd) <= 5 || !preg_match("/[a-z]/", $passd) || !preg_match("/[A-Z]/", $passd) || !preg_match("/[1-9]/", $passd)) {
+                    $msg = $msg . "Invalid password format (Password format should be more than 6 character, at least 1 uppercase, 1 lowercase & 1 number)<br>";
+                    $save = false;
                 }
             }
 
@@ -147,75 +152,63 @@ function validateDate($date, $format = 'Y-n-j')
 
             //status check//
             if (isset($_POST['gender'])) {
-                $gender = htmlspecialchars(strip_tags($_POST['gender']));   
-            }else{
+                $gender = htmlspecialchars(strip_tags($_POST['gender']));
+            } else {
                 $msg = $msg . "Please do not leave gender empty<br>";
                 $save = false;
             }
-            
+
             if (isset($_POST['status'])) {
-                $status = htmlspecialchars(strip_tags($_POST['status']));  
-            }else{
+                $status = htmlspecialchars(strip_tags($_POST['status']));
+            } else {
                 $msg = $msg . "Please do not leave status empty<br>";
                 $save = false;
             }
 
             // new 'image' field
-            $image=!empty($_FILES["pimage"]["name"])
-            ? sha1_file($_FILES['pimage']['tmp_name']) . "-" . basename($_FILES["pimage"]["name"])
-            : "";
-            $image=htmlspecialchars(strip_tags($image));
-            if(($image)){
- 
+            $image = !empty($_FILES["pimage"]["name"])
+                ? sha1_file($_FILES['pimage']['tmp_name']) . "-" . basename($_FILES["pimage"]["name"])
+                : "";
+            $image = htmlspecialchars(strip_tags($image));
+            if (($image)) {
+
                 $target_directory = "customeruploads/";
                 $target_file = $target_directory . $image;
                 $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
-             
+
                 // error message is empty
                 //$file_upload_error_messages="";
-                
+
                 // make sure certain file types are allowed
                 $allowed_file_types = array("jpg", "jpeg", "png", "gif");
-                if(!in_array($file_type, $allowed_file_types)){
-                    $msg = $msg ."<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
+                if (!in_array($file_type, $allowed_file_types)) {
+                    $msg = $msg . "<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
                     $save = false;
                 }
                 // make sure file does not exist
-                if(file_exists($target_file)){
-                    $msg = $msg ."<div>Image already exists. Try to change file name.</div>";
+                if (file_exists($target_file)) {
+                    $msg = $msg . "<div>Image already exists. Try to change file name.</div>";
                     $save = false;
                 }
                 // make sure submitted file is not too large, can't be larger than 1MB
-                if($_FILES['pimage']['size'] > 1024000){
-                    $msg = $msg ."<div>Image must be less than 1 MB in size.</div>";
+                if ($_FILES['pimage']['size'] > 1024000) {
+                    $msg = $msg . "<div>Image must be less than 1 MB in size.</div>";
                     $save = false;
                 }
                 // make sure the 'uploads' folder exists
                 // if not, create it
-                if(!is_dir($target_directory)){
+                if (!is_dir($target_directory)) {
                     mkdir($target_directory, 0777, true);
                 }
-
+                if (move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)) {
+                    // it means photo was uploaded
+                } else {
+                    echo "<div class='alert alert-danger'>";
+                    echo "<div>Unable to upload photo.</div>";
+                    echo "<div>Update the record to upload photo.</div>";
+                    echo "</div>";
+                }
             }
-            // // if $file_upload_error_messages is still empty
-            // if(empty($file_upload_error_messages)){
-            //     // it means there are no errors, so try to upload the file
-            //     if(move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)){
-            //         // it means photo was uploaded
-            //     }else{
-            //         echo "<div class='alert alert-danger'>";
-            //             echo "<div>Unable to upload photo.</div>";
-            //             echo "<div>Update the record to upload photo.</div>";
-            //         echo "</div>";
-            //     }
-            // }// if $file_upload_error_messages is NOT empty
-            // else{
-            //     // it means there are some errors, so show them to user
-            //     echo "<div class='alert alert-danger'>";
-            //         echo "<div>{$file_upload_error_messages}</div>";
-            //         echo "<div>Update the record to upload photo.</div>";
-            //     echo "</div>";
-            // }
 
 
             // include database connection
@@ -239,30 +232,11 @@ function validateDate($date, $format = 'Y-n-j')
                 $created = date('Y-m-d H:i:s');
                 $stmt->bindParam(':created', $created);
 
-                // Execute the query
-                // if (!empty($stmt->execute())) {
-                //     echo "<div class='alert alert-success'>Record was saved.</div>";
-                // }else {
-                //     echo "<div class='alert alert-danger'>Unable to save record.</div>";
-                // }
-
                 if ($save != false) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";
                     $stmt->execute();
-                    if(move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)){
-                        // it means photo was uploaded
-                    }else{
-                        echo "<div class='alert alert-danger'>";
-                            echo "<div>Unable to upload photo.</div>";
-                            echo "<div>Update the record to upload photo.</div>";
-                        echo "</div>";
-                    }
                 } else {
                     echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
-                    // echo "<div class='alert alert-danger'>";
-                    // echo "<div>{$file_upload_error_messages}</div>";
-                    // echo "<div>Update the record to upload photo.</div>";
-                    // echo "</div>";
                 }
             }
             // show error
@@ -277,25 +251,25 @@ function validateDate($date, $format = 'Y-n-j')
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>First Name</td>
-                    <td><input type='text' name='firstname' class='form-control' value= "<?php if (isset($_POST['firstname'])) echo $_POST['firstname']; ?>" /></td>
+                    <td><input type='text' name='firstname' class='form-control' value="<?php if (isset($_POST['firstname'])) echo $_POST['firstname']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Last Name</td>
-                    <td><input type='text' name='lastname' class='form-control' value= "<?php if (isset($_POST['lastname'])) echo $_POST['lastname']; ?>" /></td>
+                    <td><input type='text' name='lastname' class='form-control' value="<?php if (isset($_POST['lastname'])) echo $_POST['lastname']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Email</td>
-                    <td><input type='text' name='email' class='form-control' value= "<?php if (isset($_POST['email'])) echo $_POST['email']; ?>" /></td>
+                    <td><input type='text' name='email' class='form-control' value="<?php if (isset($_POST['email'])) echo $_POST['email']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Password</td>
-                    <td><input type='text' name='passd' class='form-control' value= "<?php if (isset($_POST['passd'])) echo $_POST['passd']; ?>" /></td>
+                    <td><input type='text' name='passd' class='form-control' value="<?php if (isset($_POST['passd'])) echo $_POST['passd']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Date of Birth</td>
                     <td>
                         <?php
-                        $yearago = date("Y",strtotime('18 years ago'));
+                        $yearago = date("Y", strtotime('18 years ago'));
                         dropdown($sday = "", $smonth = "", $syear = $yearago, $datetype = "birth_date");
                         ?>
                     </td>
@@ -304,15 +278,15 @@ function validateDate($date, $format = 'Y-n-j')
                 <tr>
                     <td>Gender</td>
                     <td>
-                        <input type="radio" name="gender" value="male" <?php if (isset($_POST["gender"])&&($gender == "male")) echo 'checked'; ?>><label>Male</label>&nbsp;
-                        <input type="radio" name="gender" value="female" <?php if (isset($_POST["gender"])&&($gender == "female")) echo 'checked'; ?>><label>Female</label>
+                        <input type="radio" name="gender" value="male" <?php if (isset($_POST["gender"]) && ($gender == "male")) echo 'checked'; ?>><label>Male</label>&nbsp;
+                        <input type="radio" name="gender" value="female" <?php if (isset($_POST["gender"]) && ($gender == "female")) echo 'checked'; ?>><label>Female</label>
                     </td>
                 </tr>
                 <tr>
                     <td>Status</td>
                     <td>
-                        <input type="radio" name="status" value="active" <?php if (isset($_POST["status"])&&($status == "active")) echo 'checked'; ?>><label>Active</label>&nbsp;
-                        <input type="radio" name="status" value="deactive" <?php if (isset($_POST["status"])&&($status == "deactive")) echo 'checked'; ?>><label>Deactive</label>
+                        <input type="radio" name="status" value="active" <?php if (isset($_POST["status"]) && ($status == "active")) echo 'checked'; ?>><label>Active</label>&nbsp;
+                        <input type="radio" name="status" value="deactive" <?php if (isset($_POST["status"]) && ($status == "deactive")) echo 'checked'; ?>><label>Deactive</label>
                     </td>
                 </tr>
                 <tr>
@@ -330,6 +304,7 @@ function validateDate($date, $format = 'Y-n-j')
         </form>
 
     </div>
+
     <!-- end .container -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 

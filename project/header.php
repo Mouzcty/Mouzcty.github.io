@@ -57,12 +57,24 @@
     color: black;
     font-size: 16px;
 }
+.logoutbtn {
+    margin: auto;
+    background-color: #ddd;
+    border: none;
+    position: absolute;
+    right: 1;
+}
+.logoutbtn a{
+    text-decoration: none;
+    color: black;
+    font-size: 16px;
+}
 </style>
 </head>
 <body>
 
 <div class="logo">
-<h1><a href="home.php"><img src="uploads/croissant png.png" width="40px" height="40px" alt=""></a></h1>
+<h1><a href="home.php"><img src="uploads/homeicon.png" width="40px" height="40px" alt=""></a></h1>
 </div>
 
 <div class="menu">
@@ -93,7 +105,8 @@
   </div>
 </div>
 
-<button class="loginbtn"><a href="login.php">Login</a></button>
+<button class="loginbtn"><a href="logout.php">Logout</a></button>
+<!-- <button class="logoutbtn"><a href="logout.php">Logout</a></button> -->
 </div><!-- end menu -->
 
 

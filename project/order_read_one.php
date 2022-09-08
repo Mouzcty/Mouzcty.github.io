@@ -6,6 +6,15 @@
          display:block;
     }
 </style>
+<?php
+session_start();
+if(isset($_SESSION["email"])){
+    //echo "Favorite color is " . $_SESSION["email"] . ".<br>";
+}else{
+    //echo "favcolor havent set";
+    header('Location: login.php');
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -90,15 +99,21 @@
                     // extract row
                     extract($row);
 
-                    $totalPrice = number_format($price*$Quantity,2);
-                    $TotalAmount = number_format($TotalAmount + $totalPrice,2);
+                    $totalPrice = $price*$quantity;
+                    $TotalAmount = $TotalAmount+$totalPrice;
+
                     $priceformat = number_format($price,2)."<br>";
+                    $totalPriceDFmt = number_format($totalPrice,2);
+                    $TotalAmountFmt = number_format($TotalAmount,2);
+
+                    echo $totalPrice;
+                    echo $TotalAmount;
                     // creating new table row per record
                     echo "<tr>";
                     echo "<td>{$name}</td>";
                     echo "<td><div class='alineright'>RM&nbsp{$priceformat}</div></td>";
-                    echo "<td>{$Quantity}</td>";
-                    echo "<td><div class='alineright'>RM&nbsp$totalPrice</div></td>";
+                    echo "<td>{$quantity}</td>";
+                    echo "<td><div class='alineright'>RM&nbsp$totalPriceDFmt</div></td>";
                 }
             }
             ?>
@@ -109,7 +124,7 @@
                     <td>
                     <div class="alineright">
                         <span>
-                        <?php echo"RM&nbsp $TotalAmount"?>
+                        <?php echo"RM&nbsp $TotalAmountFmt"?>
                         </span>
                     </div>
                     </td>
@@ -118,7 +133,7 @@
             </table>
 
     </div> <!-- end .container -->
-
+    <?php include 'footer.php';?>
     </body>
 
 </html>

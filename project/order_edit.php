@@ -1,3 +1,12 @@
+<?php
+session_start();
+if(isset($_SESSION["email"])){
+    //echo "Favorite color is " . $_SESSION["email"] . ".<br>";
+}else{
+    //echo "favcolor havent set";
+    header('Location: login.php');
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -167,6 +176,7 @@
 
     </div>
     <!-- end .container -->
+    <?php include 'footer.php';?>
     <script>
         document.addEventListener('click', function(event) {
             if (event.target.matches('.add')) {

@@ -1,3 +1,12 @@
+<?php
+session_start();
+if(isset($_SESSION["email"])){
+    //echo "Favorite color is " . $_SESSION["email"] . ".<br>";
+}else{
+    //echo "favcolor havent set";
+    header('Location: login.php');
+}
+?>
 <!DOCTYPE HTML>
 <html>
 
@@ -31,6 +40,10 @@
 
         if($action=='cantdelate'){
             echo "<div class='alert alert-danger'>Product can not be deleted.</div>";
+        }
+
+        if($action=='update'){
+            echo "<div class='alert alert-success'>Update success.</div>";
         }
 
         // select all data
@@ -73,6 +86,7 @@
                 echo "<td>{$name}</td>";
                 echo "<td>{$description}</td>";
                 echo "<td>{$price}</td>";
+                
                 if(empty($image)){
                     echo"<td><img src='uploads/photocomingsoon.png' width='auto' height='150px'></td>";
                 }else{
@@ -102,7 +116,7 @@
         ?>
 
     </div> <!-- end .container -->
-
+    <?php include 'footer.php';?>
     <!-- confirm delete record will be here -->
     <script>
     // confirm record deletion
