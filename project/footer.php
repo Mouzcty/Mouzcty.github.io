@@ -13,7 +13,7 @@
 <body>
 
 <footer>
-  <div class="footer"><p>Copyright &copy;DDM211 Web Application</p></div>
+  <div class="footer"><p>Copyright &copy;DDM211 Mouz_Web Application</p></div>
 </footer>
 
 </body>

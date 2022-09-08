@@ -59,7 +59,7 @@ if(isset($_SESSION["email"])){
     //echo "Favorite color is " . $_SESSION["email"] . ".<br>";
 }else{
     //echo "favcolor havent set";
-    header('Location: login.php');
+    header('Location: index.php');
 }
 ?>
 
